@@ -1,6 +1,6 @@
 /* =========================================================
    ANDES SKY TRAVEL
-   SISTEMA DE RESERVAS
+   SCRIPT.JS
    ========================================================= */
 
 
@@ -9,13 +9,10 @@
    ========================================================= */
 
 let tipoVuelo = "nacional";
-
 let tipoViaje = "ida-vuelta";
-
 let monedaActual = "PEN";
 
 let vueloSeleccionado = null;
-
 let asientosSeleccionados = [];
 
 let pasajeros = {
@@ -25,12 +22,11 @@ let pasajeros = {
 };
 
 let codigoReservaActual = "";
-
 let precioBaseActual = 0;
 
 
 /* =========================================================
-   TASA DE CAMBIO
+   CONFIGURACIÓN
    ========================================================= */
 
 const TASA_CAMBIO = 3.50;
@@ -45,71 +41,61 @@ const aeropuertosPeru = [
     {
         ciudad: "Lima",
         pais: "Perú",
-        codigo: "LIM",
-        aeropuerto: "Jorge Chávez"
+        codigo: "LIM"
     },
 
     {
         ciudad: "Arequipa",
         pais: "Perú",
-        codigo: "AQP",
-        aeropuerto: "Rodríguez Ballón"
+        codigo: "AQP"
     },
 
     {
         ciudad: "Cusco",
         pais: "Perú",
-        codigo: "CUZ",
-        aeropuerto: "Alejandro Velasco Astete"
+        codigo: "CUZ"
     },
 
     {
         ciudad: "Trujillo",
         pais: "Perú",
-        codigo: "TRU",
-        aeropuerto: "Capitán FAP Carlos Martínez"
+        codigo: "TRU"
     },
 
     {
         ciudad: "Piura",
         pais: "Perú",
-        codigo: "PIU",
-        aeropuerto: "Guillermo Concha Iberico"
+        codigo: "PIU"
     },
 
     {
         ciudad: "Iquitos",
         pais: "Perú",
-        codigo: "IQT",
-        aeropuerto: "Coronel FAP Francisco Secada"
+        codigo: "IQT"
     },
 
     {
         ciudad: "Tarapoto",
         pais: "Perú",
-        codigo: "TPP",
-        aeropuerto: "Cadete FAP Guillermo del Castillo"
+        codigo: "TPP"
     },
 
     {
         ciudad: "Chiclayo",
         pais: "Perú",
-        codigo: "CIX",
-        aeropuerto: "Capitán FAP José Quiñones"
+        codigo: "CIX"
     },
 
     {
         ciudad: "Juliaca",
         pais: "Perú",
-        codigo: "JUL",
-        aeropuerto: "Inca Manco Cápac"
+        codigo: "JUL"
     },
 
     {
         ciudad: "Tacna",
         pais: "Perú",
-        codigo: "TCQ",
-        aeropuerto: "Coronel FAP Carlos Ciriani"
+        codigo: "TCQ"
     }
 
 ];
@@ -117,22 +103,6 @@ const aeropuertosPeru = [
 
 /* =========================================================
    🌎 AEROPUERTOS INTERNACIONALES
-   =========================================================
-
-   IMPORTANTE:
-
-   Cuando el usuario selecciona INTERNACIONAL,
-   ya NO cargamos la lista de departamentos
-   del Perú.
-
-   Se utiliza este catálogo internacional.
-
-   Incluye Perú como punto de conexión internacional,
-   pero ahora se muestra como:
-
-   Lima - Perú (LIM)
-
-   y no simplemente como "Lima".
    ========================================================= */
 
 const aeropuertosInternacionales = [
@@ -267,8 +237,8 @@ const aeropuertosInternacionales = [
 
 
 /* =========================================================
-   PRECIOS NACIONALES
-   MONEDA BASE: USD
+   💰 PRECIOS NACIONALES
+   PRECIO BASE EN DÓLARES
    ========================================================= */
 
 const preciosNacionales = {
@@ -297,8 +267,8 @@ const preciosNacionales = {
 
 
 /* =========================================================
-   PRECIOS INTERNACIONALES
-   MONEDA BASE: USD
+   🌎 PRECIOS INTERNACIONALES
+   PRECIO BASE EN DÓLARES
    ========================================================= */
 
 const preciosInternacionales = {
@@ -404,22 +374,24 @@ function mostrarPanel(panel, boton) {
 
     document
         .querySelectorAll(".panel")
-        .forEach(
-            p =>
-                p.classList.remove(
-                    "active-panel"
-                )
-        );
+        .forEach(function (p) {
+
+            p.classList.remove(
+                "active-panel"
+            );
+
+        });
 
 
     document
         .querySelectorAll(".tab")
-        .forEach(
-            t =>
-                t.classList.remove(
-                    "active"
-                )
-        );
+        .forEach(function (t) {
+
+            t.classList.remove(
+                "active"
+            );
+
+        });
 
 
     if (panel === "reservar") {
@@ -467,7 +439,7 @@ function mostrarPanel(panel, boton) {
 
 
 /* =========================================================
-   SELECCIONAR TIPO DE VUELO
+   TIPO DE VUELO
    ========================================================= */
 
 function seleccionarTipoVuelo(tipo) {
@@ -476,54 +448,36 @@ function seleccionarTipoVuelo(tipo) {
 
 
     document
-        .getElementById(
-            "btnNacional"
-        )
-        .classList.remove(
-            "selected"
-        );
+        .getElementById("btnNacional")
+        .classList.remove("selected");
 
 
     document
-        .getElementById(
-            "btnInternacional"
-        )
-        .classList.remove(
-            "selected"
-        );
+        .getElementById("btnInternacional")
+        .classList.remove("selected");
 
 
-    if (
-        tipo === "nacional"
-    ) {
+    if (tipo === "nacional") {
 
         document
-            .getElementById(
-                "btnNacional"
-            )
-            .classList.add(
-                "selected"
-            );
+            .getElementById("btnNacional")
+            .classList.add("selected");
 
     }
 
     else {
 
         document
-            .getElementById(
-                "btnInternacional"
-            )
-            .classList.add(
-                "selected"
-            );
+            .getElementById("btnInternacional")
+            .classList.add("selected");
 
     }
 
 
     /*
-       Cada vez que cambia Nacional /
-       Internacional se vuelven a
-       cargar ORIGEN y DESTINO.
+       Al cambiar entre Nacional e Internacional,
+       se actualizan automáticamente los
+       catálogos de origen y destino.
     */
 
     cargarOrigenes();
@@ -532,75 +486,84 @@ function seleccionarTipoVuelo(tipo) {
 
 
 /* =========================================================
-   CARGAR ORÍGENES
+   CARGAR ORIGEN
    ========================================================= */
 
 function cargarOrigenes() {
 
     const origen =
-        document.getElementById(
-            "origen"
-        );
+        document.getElementById("origen");
 
 
     origen.innerHTML = "";
 
 
-    /*
-       🇵🇪 NACIONAL
+    let lista;
 
-       Origen:
-       solamente aeropuertos del Perú.
-    */
 
-    if (
-        tipoVuelo === "nacional"
-    ) {
+    if (tipoVuelo === "nacional") {
 
-        aeropuertosPeru.forEach(
-            aeropuerto => {
+        /*
+           SOLO CIUDADES DEL PERÚ
+        */
 
-                agregarOpcion(
-                    origen,
-                    aeropuerto.codigo,
-                    `${aeropuerto.ciudad} (${aeropuerto.codigo})`
-                );
+        lista =
+            aeropuertosPeru;
 
-            }
-        );
+    }
+
+    else {
+
+        /*
+           CATÁLOGO INTERNACIONAL
+        */
+
+        lista =
+            aeropuertosInternacionales;
 
     }
 
 
-    /*
-       🌎 INTERNACIONAL
+    lista.forEach(function (aeropuerto) {
 
-       Origen:
-       catálogo de aeropuertos internacionales.
+        const option =
+            document.createElement(
+                "option"
+            );
 
-       Ya NO se utiliza la lista
-       de departamentos del Perú.
-    */
 
-    else {
+        option.value =
+            aeropuerto.codigo;
 
-        aeropuertosInternacionales.forEach(
-            aeropuerto => {
 
-                agregarOpcion(
-                    origen,
-                    aeropuerto.codigo,
-                    `${aeropuerto.ciudad} - ${aeropuerto.pais} (${aeropuerto.codigo})`
-                );
+        if (tipoVuelo === "nacional") {
 
-            }
+            option.textContent =
+                `${aeropuerto.ciudad} (${aeropuerto.codigo})`;
+
+        }
+
+        else {
+
+            option.textContent =
+                `${aeropuerto.ciudad} - ${aeropuerto.pais} (${aeropuerto.codigo})`;
+
+        }
+
+
+        origen.appendChild(
+            option
         );
 
-        /*
-           Para una agencia peruana,
-           dejamos Lima como origen
-           inicial.
-        */
+    });
+
+
+    /*
+       Para vuelos internacionales
+       iniciamos en Lima.
+    */
+
+    if (tipoVuelo === "internacional") {
 
         origen.value = "LIM";
 
@@ -613,38 +576,7 @@ function cargarOrigenes() {
 
 
 /* =========================================================
-   AGREGAR OPCIÓN
-   ========================================================= */
-
-function agregarOpcion(
-    select,
-    valor,
-    texto
-) {
-
-    const option =
-        document.createElement(
-            "option"
-        );
-
-
-    option.value =
-        valor;
-
-
-    option.textContent =
-        texto;
-
-
-    select.appendChild(
-        option
-    );
-
-}
-
-
-/* =========================================================
-   CARGAR DESTINOS
+   CARGAR DESTINO
    ========================================================= */
 
 function actualizarDestino() {
@@ -664,67 +596,67 @@ function actualizarDestino() {
     destino.innerHTML = "";
 
 
-    /*
-       🇵🇪 NACIONAL
+    let lista;
 
-       Origen y destino pertenecen
-       únicamente al Perú.
-    */
 
-    if (
-        tipoVuelo === "nacional"
-    ) {
+    if (tipoVuelo === "nacional") {
 
-        aeropuertosPeru
-            .filter(
-                aeropuerto =>
-                    aeropuerto.codigo !== origen
-            )
-            .forEach(
-                aeropuerto => {
-
-                    agregarOpcion(
-                        destino,
-                        aeropuerto.codigo,
-                        `${aeropuerto.ciudad} (${aeropuerto.codigo})`
-                    );
-
-                }
-            );
+        lista =
+            aeropuertosPeru;
 
     }
-
-
-    /*
-       🌎 INTERNACIONAL
-
-       Origen y destino pertenecen
-       al catálogo internacional.
-
-       No se carga la lista de
-       departamentos nacionales.
-    */
 
     else {
 
-        aeropuertosInternacionales
-            .filter(
-                aeropuerto =>
-                    aeropuerto.codigo !== origen
-            )
-            .forEach(
-                aeropuerto => {
-
-                    agregarOpcion(
-                        destino,
-                        aeropuerto.codigo,
-                        `${aeropuerto.ciudad} - ${aeropuerto.pais} (${aeropuerto.codigo})`
-                    );
-
-                }
-            );
+        lista =
+            aeropuertosInternacionales;
 
     }
+
+
+    lista
+        .filter(function (aeropuerto) {
+
+            /*
+               El destino nunca puede ser
+               igual al origen.
+            */
+
+            return aeropuerto.codigo !== origen;
+
+        })
+        .forEach(function (aeropuerto) {
+
+            const option =
+                document.createElement(
+                    "option"
+                );
+
+
+            option.value =
+                aeropuerto.codigo;
+
+
+            if (tipoVuelo === "nacional") {
+
+                option.textContent =
+                    `${aeropuerto.ciudad} (${aeropuerto.codigo})`;
+
+            }
+
+            else {
+
+                option.textContent =
+                    `${aeropuerto.ciudad} - ${aeropuerto.pais} (${aeropuerto.codigo})`;
+
+            }
+
+
+            destino.appendChild(
+                option
+            );
+
+        });
 
 
     actualizarTextoRuta();
@@ -733,7 +665,7 @@ function actualizarDestino() {
 
 
 /* =========================================================
-   TEXTO DE RUTA
+   INFORMACIÓN DE RUTA
    ========================================================= */
 
 function actualizarTextoRuta() {
@@ -769,13 +701,19 @@ function actualizarTextoRuta() {
     }
 
 
-    info.textContent =
-        `${origen.value} → ${destino.value} | ` +
-        (
-            tipoVuelo === "nacional"
-                ? "Vuelo nacional dentro del Perú"
-                : "Vuelo internacional"
-        );
+    if (tipoVuelo === "nacional") {
+
+        info.textContent =
+            `${origen.value} → ${destino.value} | Vuelo nacional dentro del Perú`;
+
+    }
+
+    else {
+
+        info.textContent =
+            `${origen.value} → ${destino.value} | Vuelo internacional`;
+
+    }
 
 }
 
@@ -786,10 +724,19 @@ function actualizarTextoRuta() {
 
 function cambiarTipoViaje() {
 
-    tipoViaje =
+    const elemento =
         document.querySelector(
             'input[name="tipoViaje"]:checked'
-        ).value;
+        );
+
+
+    if (!elemento) {
+        return;
+    }
+
+
+    tipoViaje =
+        elemento.value;
 
 
     const campoRetorno =
@@ -804,9 +751,7 @@ function cambiarTipoViaje() {
         );
 
 
-    if (
-        tipoViaje === "solo-ida"
-    ) {
+    if (tipoViaje === "solo-ida") {
 
         campoRetorno.style.opacity =
             "0.45";
@@ -814,8 +759,7 @@ function cambiarTipoViaje() {
         fechaRetorno.disabled =
             true;
 
-        fechaRetorno.value =
-            "";
+        fechaRetorno.value = "";
 
     }
 
@@ -833,7 +777,7 @@ function cambiarTipoViaje() {
 
 
 /* =========================================================
-   PASAJEROS
+   CONTADORES DE PASAJEROS
    ========================================================= */
 
 function cambiarPasajeros(
@@ -869,25 +813,35 @@ function cambiarPasajeros(
         pasajeros[tipo];
 
 
-    actualizarContador();
+    /*
+       Si ya se seleccionó un vuelo,
+       regeneramos el formulario
+       de pasajeros.
+    */
+
+    if (vueloSeleccionado) {
+
+        generarFormularioPasajeros();
+
+        generarAsientos();
+
+        actualizarTotal();
+
+    }
 
 }
 
 
 /* =========================================================
-   TOTAL PASAJEROS
+   TOTAL DE PASAJEROS
    ========================================================= */
 
 function obtenerTotalPasajeros() {
 
     return (
-
         pasajeros.adultos +
-
         pasajeros.ninos +
-
         pasajeros.infantes
-
     );
 
 }
@@ -923,9 +877,7 @@ function buscarVuelos() {
         ).value;
 
 
-    if (
-        !fechaSalida
-    ) {
+    if (!fechaSalida) {
 
         alert(
             "Seleccione la fecha de salida."
@@ -964,74 +916,43 @@ function buscarVuelos() {
     }
 
 
-    /*
-       VALIDACIÓN NACIONAL
-    */
-
-    if (
-        tipoVuelo === "nacional" &&
-        (
-            !preciosNacionales[
-                `${origen}-${destino}`
-            ]
-        )
-    ) {
-
-        alert(
-            "La ruta nacional seleccionada no se encuentra disponible."
-        );
-
-        return;
-
-    }
-
-
-    /*
-       VALIDACIÓN INTERNACIONAL
-    */
-
-    if (
-        tipoVuelo === "internacional" &&
-        (
-            !preciosInternacionales[
-                `${origen}-${destino}`
-            ]
-        )
-    ) {
-
-        alert(
-            "La ruta internacional seleccionada no se encuentra disponible."
-        );
-
-        return;
-
-    }
-
-
     const ruta =
         `${origen}-${destino}`;
 
 
-    let precio = 0;
+    let precio;
 
 
-    if (
-        tipoVuelo === "nacional"
-    ) {
+    /*
+       PRECIO NACIONAL
+    */
+
+    if (tipoVuelo === "nacional") {
 
         precio =
-            preciosNacionales[
-                ruta
-            ];
+            preciosNacionales[ruta];
 
     }
+
+    /*
+       PRECIO INTERNACIONAL
+    */
 
     else {
 
         precio =
-            preciosInternacionales[
-                ruta
-            ];
+            preciosInternacionales[ruta];
+
+    }
+
+
+    if (!precio) {
+
+        alert(
+            "La ruta seleccionada no se encuentra disponible actualmente."
+        );
+
+        return;
 
     }
 
@@ -1113,18 +1034,49 @@ function generarVuelos(
 
 
     horarios.forEach(
-        (vuelo, index) => {
+        function (horario, index) {
 
             const precio =
                 precioBase +
                 (index * 15);
 
 
-            const precioMostrar =
-                convertirPrecio(
-                    precio
-                );
+            /*
+               OBJETO DEL VUELO
+            */
 
+            const vuelo = {
+
+                numero:
+                    `AS${245 + index}`,
+
+                origen:
+                    origen,
+
+                destino:
+                    destino,
+
+                salida:
+                    horario.salida,
+
+                llegada:
+                    horario.llegada,
+
+                duracion:
+                    horario.duracion,
+
+                escalas:
+                    horario.escalas,
+
+                precio:
+                    precio
+
+            };
+
+
+            /*
+               TARJETA
+            */
 
             const card =
                 document.createElement(
@@ -1136,109 +1088,222 @@ function generarVuelos(
                 "flight-card";
 
 
-            card.innerHTML = `
+            /*
+               INFORMACIÓN
+            */
+
+            const informacion =
+                document.createElement(
+                    "div"
+                );
+
+
+            informacion.innerHTML = `
+
+                <div class="airline-name">
+                    ANDES SKY
+                </div>
+
+                <small>
+                    ${vuelo.numero}
+                </small>
+
+            `;
+
+
+            /*
+               RUTA
+            */
+
+            const ruta =
+                document.createElement(
+                    "div"
+                );
+
+
+            ruta.className =
+                "flight-route";
+
+
+            ruta.innerHTML = `
 
                 <div>
 
-                    <div class="airline-name">
-                        ANDES SKY
+                    <div class="flight-time">
+                        ${vuelo.salida}
                     </div>
 
-                    <small>
-                        AS ${245 + index}
-                    </small>
-
-                </div>
-
-
-                <div class="flight-route">
-
-                    <div>
-
-                        <div class="flight-time">
-                            ${vuelo.salida}
-                        </div>
-
-                        <div class="flight-code">
-                            ${origen}
-                        </div>
-
-                    </div>
-
-                    <span>→</span>
-
-                    <div>
-
-                        <div class="flight-time">
-                            ${vuelo.llegada}
-                        </div>
-
-                        <div class="flight-code">
-                            ${destino}
-                        </div>
-
+                    <div class="flight-code">
+                        ${vuelo.origen}
                     </div>
 
                 </div>
 
+                <span>→</span>
 
-                <div class="flight-duration">
+                <div>
 
-                    <strong>
-                        ${vuelo.duracion}
-                    </strong>
+                    <div class="flight-time">
+                        ${vuelo.llegada}
+                    </div>
 
-                    <br>
-
-                    ${vuelo.escalas}
-
-                </div>
-
-
-                <div class="flight-price">
-
-                    <strong>
-                        ${precioMostrar}
-                    </strong>
-
-                    <small>
-                        por persona
-                    </small>
-
-                    <button
-                        onclick='seleccionarVuelo(
-                            ${JSON.stringify({
-                                numero:
-                                    `AS${245 + index}`,
-
-                                origen:
-                                    origen,
-
-                                destino:
-                                    destino,
-
-                                salida:
-                                    vuelo.salida,
-
-                                llegada:
-                                    vuelo.llegada,
-
-                                duracion:
-                                    vuelo.duracion,
-
-                                precio:
-                                    precio
-                            })}
-                        '>
-
-                        SELECCIONAR
-
-                    </button>
+                    <div class="flight-code">
+                        ${vuelo.destino}
+                    </div>
 
                 </div>
 
             `;
 
+
+            /*
+               DURACIÓN
+            */
+
+            const duracion =
+                document.createElement(
+                    "div"
+                );
+
+
+            duracion.className =
+                "flight-duration";
+
+
+            duracion.innerHTML = `
+
+                <strong>
+                    ${vuelo.duracion}
+                </strong>
+
+                <br>
+
+                ${vuelo.escalas}
+
+            `;
+
+
+            /*
+               PRECIO
+            */
+
+            const precioDiv =
+                document.createElement(
+                    "div"
+                );
+
+
+            precioDiv.className =
+                "flight-price";
+
+
+            const precioTexto =
+                document.createElement(
+                    "strong"
+                );
+
+
+            precioTexto.textContent =
+                convertirPrecio(
+                    vuelo.precio
+                );
+
+
+            const descripcion =
+                document.createElement(
+                    "small"
+                );
+
+
+            descripcion.textContent =
+                "por persona";
+
+
+            /*
+               BOTÓN
+            */
+
+            const boton =
+                document.createElement(
+                    "button"
+                );
+
+
+            boton.type =
+                "button";
+
+
+            boton.textContent =
+                "SELECCIONAR";
+
+
+            /*
+               =================================================
+               CORRECCIÓN IMPORTANTE
+               =================================================
+
+               El evento se asigna directamente
+               al botón.
+
+               NO utilizamos onclick dentro
+               de innerHTML.
+               =================================================
+            */
+
+            boton.addEventListener(
+                "click",
+                function () {
+
+                    seleccionarVuelo(
+                        vuelo
+                    );
+
+                }
+            );
+
+
+            precioDiv.appendChild(
+                precioTexto
+            );
+
+
+            precioDiv.appendChild(
+                descripcion
+            );
+
+
+            precioDiv.appendChild(
+                boton
+            );
+
+
+            /*
+               ARMAR TARJETA
+            */
+
+            card.appendChild(
+                informacion
+            );
+
+
+            card.appendChild(
+                ruta
+            );
+
+
+            card.appendChild(
+                duracion
+            );
+
+
+            card.appendChild(
+                precioDiv
+            );
+
+
+            /*
+               AGREGAR AL DOM
+            */
 
             lista.appendChild(
                 card
@@ -1254,9 +1319,13 @@ function generarVuelos(
    SELECCIONAR VUELO
    ========================================================= */
 
-function seleccionarVuelo(
-    vuelo
-) {
+function seleccionarVuelo(vuelo) {
+
+    console.log(
+        "Vuelo seleccionado:",
+        vuelo
+    );
+
 
     vueloSeleccionado =
         vuelo;
@@ -1266,10 +1335,23 @@ function seleccionarVuelo(
         [];
 
 
+    /*
+       Generar pasajeros
+    */
+
     generarFormularioPasajeros();
+
+
+    /*
+       Generar asientos
+    */
 
     generarAsientos();
 
+
+    /*
+       Mostrar información
+    */
 
     document
         .getElementById(
@@ -1319,6 +1401,19 @@ function seleccionarVuelo(
     actualizarTotal();
 
 
+    /*
+       Mostrar mensaje
+    */
+
+    alert(
+        `Vuelo ${vuelo.numero} seleccionado correctamente.`
+    );
+
+
+    /*
+       Desplazar pantalla
+    */
+
     document
         .getElementById(
             "seccionPasajeros"
@@ -1331,7 +1426,7 @@ function seleccionarVuelo(
 
 
 /* =========================================================
-   FORMULARIO PASAJEROS
+   FORMULARIO DE PASAJEROS
    ========================================================= */
 
 function generarFormularioPasajeros() {
@@ -1360,8 +1455,7 @@ function generarFormularioPasajeros() {
 
 
         if (
-            i >
-            pasajeros.adultos
+            i > pasajeros.adultos
         ) {
 
             if (
@@ -1473,7 +1567,7 @@ function generarFormularioPasajeros() {
 
 
 /* =========================================================
-   ASIENTOS
+   MAPA DE ASIENTOS
    ========================================================= */
 
 function generarAsientos() {
@@ -1503,64 +1597,78 @@ function generarAsientos() {
             "seat-row";
 
 
-        ["A", "B", "C", "D"]
-            .forEach(
-                letra => {
-
-                    const numero =
-                        `${fila}${letra}`;
-
-
-                    const button =
-                        document.createElement(
-                            "button"
-                        );
+        const letras = [
+            "A",
+            "B",
+            "C",
+            "D"
+        ];
 
 
-                    button.className =
-                        "seat-button";
+        letras.forEach(
+            function (letra) {
+
+                const numero =
+                    `${fila}${letra}`;
 
 
-                    button.textContent =
-                        numero;
+                const boton =
+                    document.createElement(
+                        "button"
+                    );
 
 
-                    if (
-                        asientosOcupados.includes(
-                            numero
-                        )
-                    ) {
-
-                        button.classList.add(
-                            "occupied"
-                        );
-
-                        button.disabled =
-                            true;
-
-                    }
-
-                    else {
-
-                        button.onclick =
-                            function () {
-
-                                seleccionarAsiento(
-                                    numero,
-                                    button
-                                );
-
-                            };
-
-                    }
+                boton.type =
+                    "button";
 
 
-                    row.appendChild(
-                        button
+                boton.className =
+                    "seat-button";
+
+
+                boton.textContent =
+                    numero;
+
+
+                if (
+                    asientosOcupados.includes(
+                        numero
+                    )
+                ) {
+
+                    boton.classList.add(
+                        "occupied"
+                    );
+
+
+                    boton.disabled =
+                        true;
+
+                }
+
+                else {
+
+                    boton.addEventListener(
+                        "click",
+                        function () {
+
+                            seleccionarAsiento(
+                                numero,
+                                boton
+                            );
+
+                        }
                     );
 
                 }
-            );
+
+
+                row.appendChild(
+                    boton
+                );
+
+            }
+        );
 
 
         mapa.appendChild(
@@ -1596,8 +1704,11 @@ function seleccionarAsiento(
 
         asientosSeleccionados =
             asientosSeleccionados.filter(
-                a =>
-                    a !== asiento
+                function (a) {
+
+                    return a !== asiento;
+
+                }
             );
 
 
@@ -1641,27 +1752,34 @@ function seleccionarAsiento(
 
 
 /* =========================================================
-   CONTADOR ASIENTOS
+   CONTADOR DE ASIENTOS
    ========================================================= */
 
 function actualizarContador() {
+
+    const elemento =
+        document.getElementById(
+            "contadorAsientos"
+        );
+
+
+    if (!elemento) {
+        return;
+    }
+
 
     const total =
         obtenerTotalPasajeros();
 
 
-    document
-        .getElementById(
-            "contadorAsientos"
-        )
-        .textContent =
+    elemento.textContent =
         `Asientos seleccionados: ${asientosSeleccionados.length} de ${total}`;
 
 }
 
 
 /* =========================================================
-   CAMBIO DE MONEDA
+   CAMBIAR MONEDA
    ========================================================= */
 
 function cambiarMoneda() {
@@ -1673,9 +1791,9 @@ function cambiarMoneda() {
 
 
     /*
-       Si ya hay vuelos mostrados,
-       los volvemos a generar
-       automáticamente con la nueva moneda.
+       Si ya existen resultados,
+       se vuelven a generar con
+       la nueva moneda.
     */
 
     if (
@@ -1701,51 +1819,38 @@ function cambiarMoneda() {
 
 
 /* =========================================================
-   CONVERSIÓN DE PRECIOS
+   CONVERTIR PRECIO
    ========================================================= */
 
 function convertirPrecio(
     precioUSD
 ) {
 
-    let valor;
-
-
     if (
         monedaActual === "PEN"
     ) {
 
-        valor =
-            precioUSD *
-            TASA_CAMBIO;
-
-
         return (
             "S/ " +
-            valor.toFixed(2)
+            (
+                precioUSD *
+                TASA_CAMBIO
+            ).toFixed(2)
         );
 
     }
 
 
-    else {
-
-        valor =
-            precioUSD;
-
-
-        return (
-            "$ " +
-            valor.toFixed(2)
-        );
-
-    }
+    return (
+        "$ " +
+        precioUSD.toFixed(2)
+    );
 
 }
 
 
 /* =========================================================
-   PRECIO NUMÉRICO CONVERSIÓN
+   OBTENER PRECIO CONVERTIDO
    ========================================================= */
 
 function obtenerPrecioConvertido(
@@ -1784,13 +1889,13 @@ function actualizarTotal() {
     }
 
 
-    const cantidadPasajeros =
+    const cantidad =
         obtenerTotalPasajeros();
 
 
     let total =
         vueloSeleccionado.precio *
-        cantidadPasajeros;
+        cantidad;
 
 
     const servicios =
@@ -1800,7 +1905,7 @@ function actualizarTotal() {
 
 
     servicios.forEach(
-        servicio => {
+        function (servicio) {
 
             total +=
                 preciosServicios[
@@ -1853,17 +1958,17 @@ function confirmarReserva() {
     }
 
 
-    const totalPasajeros =
+    const total =
         obtenerTotalPasajeros();
 
 
     if (
         asientosSeleccionados.length !==
-        totalPasajeros
+        total
     ) {
 
         alert(
-            `Debe seleccionar ${totalPasajeros} asiento(s).`
+            `Debe seleccionar ${total} asiento(s).`
         );
 
         return;
@@ -2008,7 +2113,7 @@ function validarPasajeros() {
 
 
 /* =========================================================
-   RESUMEN
+   MOSTRAR RESUMEN
    ========================================================= */
 
 function mostrarResumen() {
@@ -2035,7 +2140,7 @@ function mostrarResumen() {
             <div class="summary-item">
 
                 <small>
-                    CÓDIGO DE RESERVA
+                    CÓDIGO
                 </small>
 
                 <strong>
@@ -2054,8 +2159,8 @@ function mostrarResumen() {
                 <strong>
                     ${
                         tipoVuelo === "nacional"
-                            ? "🇵🇪 Nacional"
-                            : "🌎 Internacional"
+                        ? "🇵🇪 Nacional"
+                        : "🌎 Internacional"
                     }
                 </strong>
 
@@ -2171,7 +2276,7 @@ function mostrarResumen() {
 
 
 /* =========================================================
-   CÓDIGO DE RESERVA
+   GENERAR CÓDIGO
    ========================================================= */
 
 function generarCodigoReserva() {
@@ -2179,13 +2284,12 @@ function generarCodigoReserva() {
     const numero =
         Math.floor(
             1000 +
-            Math.random() * 9000
+            Math.random() *
+            9000
         );
 
 
-    return (
-        `AST-2026-${numero}`
-    );
+    return `AST-2026-${numero}`;
 
 }
 
@@ -2255,7 +2359,7 @@ function guardarReserva() {
 
 
     alert(
-        "La reserva ha sido guardada en este navegador."
+        "La reserva ha sido guardada correctamente."
     );
 
 }
@@ -2289,9 +2393,7 @@ function buscarReserva() {
         );
 
 
-    if (
-        !reserva
-    ) {
+    if (!reserva) {
 
         resultado.innerHTML = `
 
@@ -2352,8 +2454,8 @@ function buscarReserva() {
 
             ${
                 datos.tipoVuelo === "nacional"
-                    ? "Nacional"
-                    : "Internacional"
+                ? "Nacional"
+                : "Internacional"
             }
         </p>
 
@@ -2415,27 +2517,43 @@ function cargarEstadoAeropuertos() {
 
 
     aeropuertosPeru.forEach(
-        aeropuerto => {
+        function (aeropuerto) {
 
-            agregarOpcion(
+            const opcionOrigen =
+                document.createElement(
+                    "option"
+                );
 
-                origen,
 
-                aeropuerto.codigo,
+            opcionOrigen.value =
+                aeropuerto.codigo;
 
-                `${aeropuerto.ciudad} (${aeropuerto.codigo})`
 
+            opcionOrigen.textContent =
+                `${aeropuerto.ciudad} (${aeropuerto.codigo})`;
+
+
+            origen.appendChild(
+                opcionOrigen
             );
 
 
-            agregarOpcion(
+            const opcionDestino =
+                document.createElement(
+                    "option"
+                );
 
-                destino,
 
-                aeropuerto.codigo,
+            opcionDestino.value =
+                aeropuerto.codigo;
 
-                `${aeropuerto.ciudad} (${aeropuerto.codigo})`
 
+            opcionDestino.textContent =
+                `${aeropuerto.ciudad} (${aeropuerto.codigo})`;
+
+
+            destino.appendChild(
+                opcionDestino
             );
 
         }
@@ -2522,7 +2640,7 @@ function consultarEstado() {
 
 
 /* =========================================================
-   BÚSQUEDA ESTADO
+   CAMBIAR MODO DE BÚSQUEDA
    ========================================================= */
 
 function cambiarBusquedaEstado(
@@ -2535,10 +2653,13 @@ function cambiarBusquedaEstado(
             ".search-option"
         )
         .forEach(
-            b =>
+            function (b) {
+
                 b.classList.remove(
                     "active"
-                )
+                );
+
+            }
         );
 
 
@@ -2561,7 +2682,7 @@ function cambiarBusquedaEstado(
 
 
 /* =========================================================
-   FECHAS
+   FECHAS MÍNIMAS
    ========================================================= */
 
 function establecerFechaMinima() {
@@ -2572,32 +2693,45 @@ function establecerFechaMinima() {
             .split("T")[0];
 
 
-    document
-        .getElementById(
+    const fechaSalida =
+        document.getElementById(
             "fechaSalida"
-        )
-        .min =
-        hoy;
+        );
 
 
-    document
-        .getElementById(
+    const fechaRetorno =
+        document.getElementById(
             "fechaRetorno"
-        )
-        .min =
-        hoy;
+        );
 
 
-    document
-        .getElementById(
+    const estadoFecha =
+        document.getElementById(
             "estadoFecha"
-        )
-        .min =
-        hoy;
+        );
+
+
+    if (fechaSalida) {
+
+        fechaSalida.min =
+            hoy;
+
+    }
+
+
+    if (fechaRetorno) {
+
+        fechaRetorno.min =
+            hoy;
+
+    }
+
+
+    if (estadoFecha) {
+
+        estadoFecha.min =
+            hoy;
+
+    }
 
 }
-
-
-/* =========================================================
-   FIN
-   ========================================================= */
