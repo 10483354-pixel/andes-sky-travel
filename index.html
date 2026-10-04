@@ -1,0 +1,1510 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Andes Sky Travel | Agencia de Viajes</title>
+
+    <link rel="stylesheet"
+          href="style.css">
+
+</head>
+
+
+<body>
+
+
+<!-- =====================================================
+     HEADER
+===================================================== -->
+
+<header class="header">
+
+    <div class="logo">
+
+        <div class="logo-icon">
+            ✈
+        </div>
+
+        <div>
+
+            <h1>ANDES SKY</h1>
+
+            <span>TRAVEL</span>
+
+        </div>
+
+    </div>
+
+
+    <nav>
+
+        <a href="#inicio">Inicio</a>
+
+        <a href="#reserva">Reservar</a>
+
+        <a href="#destinos">Destinos</a>
+
+        <a href="#servicios">Servicios</a>
+
+        <a href="#confirmacion">Mi reserva</a>
+
+    </nav>
+
+</header>
+
+
+
+<!-- =====================================================
+     HERO
+===================================================== -->
+
+<section class="hero"
+         id="inicio">
+
+    <div class="hero-overlay"></div>
+
+
+    <div class="hero-content">
+
+        <span class="hero-tag">
+            AGENCIA DE VIAJES
+        </span>
+
+
+        <h2>
+
+            Descubre el mundo
+
+            <strong>
+                sin límites
+            </strong>
+
+        </h2>
+
+
+        <p>
+
+            Vuelos, hoteles, experiencias y
+            servicios diseñados para que
+            disfrutes cada momento de tu viaje.
+
+        </p>
+
+
+        <a href="#reserva"
+           class="btn-primary">
+
+            Comenzar mi viaje
+
+        </a>
+
+    </div>
+
+</section>
+
+
+
+<!-- =====================================================
+     BENEFICIOS
+===================================================== -->
+
+<section class="beneficios">
+
+    <div class="beneficio">
+
+        <span>✈️</span>
+
+        <div>
+
+            <strong>
+                Vuelos nacionales e internacionales
+            </strong>
+
+            <small>
+                Conecta con destinos en todo el mundo.
+            </small>
+
+        </div>
+
+    </div>
+
+
+    <div class="beneficio">
+
+        <span>🏨</span>
+
+        <div>
+
+            <strong>
+                Hoteles y alojamiento
+            </strong>
+
+            <small>
+                Encuentra el alojamiento ideal.
+            </small>
+
+        </div>
+
+    </div>
+
+
+    <div class="beneficio">
+
+        <span>🛡️</span>
+
+        <div>
+
+            <strong>
+                Viaja seguro
+            </strong>
+
+            <small>
+                Servicios y asistencia para tu viaje.
+            </small>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<main>
+
+
+<!-- =====================================================
+     PROGRESO
+===================================================== -->
+
+<div class="progress">
+
+    <div class="progress-step active">
+        <span>01</span>
+        <small>Viaje</small>
+    </div>
+
+    <div class="progress-line"></div>
+
+    <div class="progress-step">
+        <span>02</span>
+        <small>Pasajeros</small>
+    </div>
+
+    <div class="progress-line"></div>
+
+    <div class="progress-step">
+        <span>03</span>
+        <small>Vuelo</small>
+    </div>
+
+    <div class="progress-line"></div>
+
+    <div class="progress-step">
+        <span>04</span>
+        <small>Servicios</small>
+    </div>
+
+    <div class="progress-line"></div>
+
+    <div class="progress-step">
+        <span>05</span>
+        <small>Confirmación</small>
+    </div>
+
+</div>
+
+
+
+<!-- =====================================================
+     01 DATOS DEL VIAJE
+===================================================== -->
+
+<section class="section"
+         id="reserva">
+
+
+    <div class="section-title">
+
+        <div class="number">
+            01
+        </div>
+
+        <div>
+
+            <h2>
+                Planifica tu viaje
+            </h2>
+
+            <p>
+                Selecciona el tipo y las características
+                de tu próximo viaje.
+            </p>
+
+        </div>
+
+    </div>
+
+
+
+    <div class="card">
+
+
+        <label class="label">
+            Tipo de viaje
+        </label>
+
+
+        <div class="trip-options">
+
+
+            <button
+                type="button"
+                class="trip-option selected"
+                onclick="seleccionarTipoViaje('ida-vuelta', this)">
+
+                <span>🔄</span>
+
+                <strong>
+                    Ida y vuelta
+                </strong>
+
+                <small>
+                    Viaje con retorno
+                </small>
+
+            </button>
+
+
+            <button
+                type="button"
+                class="trip-option"
+                onclick="seleccionarTipoViaje('solo-ida', this)">
+
+                <span>🛫</span>
+
+                <strong>
+                    Solo ida
+                </strong>
+
+                <small>
+                    Un solo trayecto
+                </small>
+
+            </button>
+
+
+            <button
+                type="button"
+                class="trip-option"
+                onclick="seleccionarTipoViaje('multidestino', this)">
+
+                <span>🌎</span>
+
+                <strong>
+                    Multidestino
+                </strong>
+
+                <small>
+                    Varios destinos
+                </small>
+
+            </button>
+
+        </div>
+
+
+
+        <div class="form-grid">
+
+
+            <div class="form-group">
+
+                <label>
+                    Origen
+                </label>
+
+                <select id="origen"
+                        onchange="generarVuelos()">
+
+                    <option value="">
+                        Seleccione origen
+                    </option>
+
+                    <option value="Lima">
+                        🇵🇪 Lima - Perú (LIM)
+                    </option>
+
+                    <option value="Cusco">
+                        🇵🇪 Cusco - Perú (CUZ)
+                    </option>
+
+                    <option value="Arequipa">
+                        🇵🇪 Arequipa - Perú (AQP)
+                    </option>
+
+                    <option value="Santiago">
+                        🇨🇱 Santiago - Chile (SCL)
+                    </option>
+
+                    <option value="Buenos Aires">
+                        🇦🇷 Buenos Aires - Argentina (EZE)
+                    </option>
+
+                    <option value="Bogotá">
+                        🇨🇴 Bogotá - Colombia (BOG)
+                    </option>
+
+                    <option value="Miami">
+                        🇺🇸 Miami - Estados Unidos (MIA)
+                    </option>
+
+                    <option value="Madrid">
+                        🇪🇸 Madrid - España (MAD)
+                    </option>
+
+                    <option value="París">
+                        🇫🇷 París - Francia (CDG)
+                    </option>
+
+                    <option value="Roma">
+                        🇮🇹 Roma - Italia (FCO)
+                    </option>
+
+                </select>
+
+            </div>
+
+
+
+            <div class="form-group">
+
+                <label>
+                    Destino
+                </label>
+
+                <select id="destino"
+                        onchange="generarVuelos()">
+
+                    <option value="">
+                        Seleccione destino
+                    </option>
+
+                    <option value="Cusco">
+                        🇵🇪 Cusco - Perú (CUZ)
+                    </option>
+
+                    <option value="Arequipa">
+                        🇵🇪 Arequipa - Perú (AQP)
+                    </option>
+
+                    <option value="Iquitos">
+                        🇵🇪 Iquitos - Perú (IQT)
+                    </option>
+
+                    <option value="Santiago">
+                        🇨🇱 Santiago - Chile (SCL)
+                    </option>
+
+                    <option value="Buenos Aires">
+                        🇦🇷 Buenos Aires - Argentina (EZE)
+                    </option>
+
+                    <option value="Cartagena">
+                        🇨🇴 Cartagena - Colombia (CTG)
+                    </option>
+
+                    <option value="Miami">
+                        🇺🇸 Miami - Estados Unidos (MIA)
+                    </option>
+
+                    <option value="Nueva York">
+                        🇺🇸 Nueva York - Estados Unidos (JFK)
+                    </option>
+
+                    <option value="Madrid">
+                        🇪🇸 Madrid - España (MAD)
+                    </option>
+
+                    <option value="París">
+                        🇫🇷 París - Francia (CDG)
+                    </option>
+
+                    <option value="Roma">
+                        🇮🇹 Roma - Italia (FCO)
+                    </option>
+
+                    <option value="Londres">
+                        🇬🇧 Londres - Reino Unido (LHR)
+                    </option>
+
+                    <option value="Tokio">
+                        🇯🇵 Tokio - Japón (NRT)
+                    </option>
+
+                    <option value="Dubái">
+                        🇦🇪 Dubái - Emiratos Árabes (DXB)
+                    </option>
+
+                </select>
+
+            </div>
+
+
+
+            <div class="form-group">
+
+                <label>
+                    Fecha de ida
+                </label>
+
+                <input type="date"
+                       id="fechaIda"
+                       onchange="generarVuelos()">
+
+            </div>
+
+
+
+            <div class="form-group">
+
+                <label>
+                    Fecha de retorno
+                </label>
+
+                <input type="date"
+                       id="fechaRetorno">
+
+            </div>
+
+
+
+            <div class="form-group">
+
+                <label>
+                    Adultos
+                </label>
+
+                <select id="adultos"
+                        onchange="generarPasajeros()">
+
+                    <option value="1">
+                        1 adulto
+                    </option>
+
+                    <option value="2">
+                        2 adultos
+                    </option>
+
+                    <option value="3">
+                        3 adultos
+                    </option>
+
+                    <option value="4">
+                        4 adultos
+                    </option>
+
+                    <option value="5">
+                        5 adultos
+                    </option>
+
+                    <option value="6">
+                        6 adultos
+                    </option>
+
+                </select>
+
+            </div>
+
+
+
+            <div class="form-group">
+
+                <label>
+                    Niños
+                </label>
+
+                <select id="ninos"
+                        onchange="generarPasajeros()">
+
+                    <option value="0">
+                        0 niños
+                    </option>
+
+                    <option value="1">
+                        1 niño
+                    </option>
+
+                    <option value="2">
+                        2 niños
+                    </option>
+
+                    <option value="3">
+                        3 niños
+                    </option>
+
+                </select>
+
+            </div>
+
+
+
+            <div class="form-group">
+
+                <label>
+                    Infantes
+                </label>
+
+                <select id="infantes"
+                        onchange="generarPasajeros()">
+
+                    <option value="0">
+                        0 infantes
+                    </option>
+
+                    <option value="1">
+                        1 infante
+                    </option>
+
+                    <option value="2">
+                        2 infantes
+                    </option>
+
+                </select>
+
+            </div>
+
+
+
+            <div class="form-group">
+
+                <label>
+                    Clase
+                </label>
+
+                <select id="clase"
+                        onchange="calcularTotal()">
+
+                    <option value="Economica">
+                        Económica
+                    </option>
+
+                    <option value="Premium">
+                        Premium Economy
+                    </option>
+
+                    <option value="Ejecutiva">
+                        Ejecutiva
+                    </option>
+
+                    <option value="Primera">
+                        Primera clase
+                    </option>
+
+                </select>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =====================================================
+     DESTINOS
+===================================================== -->
+
+<section class="section"
+         id="destinos">
+
+
+    <div class="section-title">
+
+        <div class="number">
+            🌎
+        </div>
+
+        <div>
+
+            <h2>
+                Destinos destacados
+            </h2>
+
+            <p>
+                Inspírate para tu próximo viaje.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="destination-grid">
+
+
+        <div class="destination-card">
+
+            <div class="destination-image cusco">
+                🇵🇪
+            </div>
+
+            <div class="destination-info">
+
+                <span>
+                    PERÚ
+                </span>
+
+                <h3>
+                    Cusco
+                </h3>
+
+                <p>
+                    Historia, cultura y aventura.
+                </p>
+
+                <strong>
+                    Desde S/ 289
+                </strong>
+
+            </div>
+
+        </div>
+
+
+
+        <div class="destination-card">
+
+            <div class="destination-image paris">
+                🇫🇷
+            </div>
+
+            <div class="destination-info">
+
+                <span>
+                    EUROPA
+                </span>
+
+                <h3>
+                    París
+                </h3>
+
+                <p>
+                    La ciudad de la luz.
+                </p>
+
+                <strong>
+                    Desde S/ 2,450
+                </strong>
+
+            </div>
+
+        </div>
+
+
+
+        <div class="destination-card">
+
+            <div class="destination-image miami">
+                🇺🇸
+            </div>
+
+            <div class="destination-info">
+
+                <span>
+                    NORTEAMÉRICA
+                </span>
+
+                <h3>
+                    Miami
+                </h3>
+
+                <p>
+                    Sol, playa y entretenimiento.
+                </p>
+
+                <strong>
+                    Desde S/ 1,480
+                </strong>
+
+            </div>
+
+        </div>
+
+
+
+        <div class="destination-card">
+
+            <div class="destination-image madrid">
+                🇪🇸
+            </div>
+
+            <div class="destination-info">
+
+                <span>
+                    EUROPA
+                </span>
+
+                <h3>
+                    Madrid
+                </h3>
+
+                <p>
+                    Cultura, gastronomía y tradición.
+                </p>
+
+                <strong>
+                    Desde S/ 1,850
+                </strong>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =====================================================
+     PASAJEROS
+===================================================== -->
+
+<section class="section"
+         id="pasajeros">
+
+
+    <div class="section-title">
+
+        <div class="number">
+            02
+        </div>
+
+        <div>
+
+            <h2>
+                Datos de los pasajeros
+            </h2>
+
+            <p>
+                Registra la información de cada viajero.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div id="contenedorPasajeros">
+
+        <div class="message">
+
+            👥 Selecciona la cantidad de adultos,
+            niños e infantes.
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =====================================================
+     VUELOS
+===================================================== -->
+
+<section class="section"
+         id="vuelos">
+
+
+    <div class="section-title">
+
+        <div class="number">
+            03
+        </div>
+
+        <div>
+
+            <h2>
+                Vuelos disponibles
+            </h2>
+
+            <p>
+                Selecciona el horario que prefieras.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div id="listaVuelos">
+
+        <div class="message">
+
+            ✈️ Selecciona origen, destino y fecha
+            para consultar los vuelos.
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =====================================================
+     ASIENTOS
+===================================================== -->
+
+<section class="section">
+
+
+    <div class="section-title">
+
+        <div class="number">
+            💺
+        </div>
+
+        <div>
+
+            <h2>
+                Selección de asientos
+            </h2>
+
+            <p>
+                Elige un asiento para cada pasajero.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="cabin">
+
+
+        <div class="cabin-header">
+
+            <strong>
+                ✈ CABINA DEL AVIÓN
+            </strong>
+
+            <span id="contadorAsientos">
+                0 / 0
+            </span>
+
+        </div>
+
+
+        <div class="seat-legend">
+
+            <span>
+                <i class="available"></i>
+                Disponible
+            </span>
+
+            <span>
+                <i class="chosen"></i>
+                Seleccionado
+            </span>
+
+            <span>
+                <i class="occupied"></i>
+                Ocupado
+            </span>
+
+        </div>
+
+
+        <div id="mapaAsientos">
+
+            <div class="message">
+
+                💺 Selecciona pasajeros para
+                habilitar los asientos.
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =====================================================
+     SERVICIOS
+===================================================== -->
+
+<section class="section"
+         id="servicios">
+
+
+    <div class="section-title">
+
+        <div class="number">
+            04
+        </div>
+
+        <div>
+
+            <h2>
+                Personaliza tu viaje
+            </h2>
+
+            <p>
+                Agrega los servicios que necesites.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="services-grid">
+
+
+        <label class="service">
+
+            <input type="checkbox"
+                   value="150"
+                   onchange="calcularTotal()">
+
+            <span class="service-icon">
+                🏨
+            </span>
+
+            <div>
+
+                <strong>
+                    Hotel
+                </strong>
+
+                <small>
+                    Alojamiento
+                </small>
+
+            </div>
+
+            <b>
+                S/ 150
+            </b>
+
+        </label>
+
+
+
+        <label class="service">
+
+            <input type="checkbox"
+                   value="30"
+                   onchange="calcularTotal()">
+
+            <span class="service-icon">
+                🍽️
+            </span>
+
+            <div>
+
+                <strong>
+                    Alimentación
+                </strong>
+
+                <small>
+                    Comida a bordo
+                </small>
+
+            </div>
+
+            <b>
+                S/ 30
+            </b>
+
+        </label>
+
+
+
+        <label class="service">
+
+            <input type="checkbox"
+                   value="80"
+                   onchange="calcularTotal()">
+
+            <span class="service-icon">
+                🧳
+            </span>
+
+            <div>
+
+                <strong>
+                    Equipaje adicional
+                </strong>
+
+                <small>
+                    23 kg adicionales
+                </small>
+
+            </div>
+
+            <b>
+                S/ 80
+            </b>
+
+        </label>
+
+
+
+        <label class="service">
+
+            <input type="checkbox"
+                   value="50"
+                   onchange="calcularTotal()">
+
+            <span class="service-icon">
+                🚐
+            </span>
+
+            <div>
+
+                <strong>
+                    Traslado
+                </strong>
+
+                <small>
+                    Aeropuerto - hotel
+                </small>
+
+            </div>
+
+            <b>
+                S/ 50
+            </b>
+
+        </label>
+
+
+
+        <label class="service">
+
+            <input type="checkbox"
+                   value="120"
+                   onchange="calcularTotal()">
+
+            <span class="service-icon">
+                🛡️
+            </span>
+
+            <div>
+
+                <strong>
+                    Seguro de viaje
+                </strong>
+
+                <small>
+                    Cobertura básica
+                </small>
+
+            </div>
+
+            <b>
+                S/ 120
+            </b>
+
+        </label>
+
+
+
+        <label class="service">
+
+            <input type="checkbox"
+                   value="90"
+                   onchange="calcularTotal()">
+
+            <span class="service-icon">
+                📶
+            </span>
+
+            <div>
+
+                <strong>
+                    Wi-Fi
+                </strong>
+
+                <small>
+                    Conectividad durante el vuelo
+                </small>
+
+            </div>
+
+            <b>
+                S/ 90
+            </b>
+
+        </label>
+
+    </div>
+
+</section>
+
+
+
+<!-- =====================================================
+     CONTACTO
+===================================================== -->
+
+<section class="section">
+
+
+    <div class="section-title">
+
+        <div class="number">
+            📞
+        </div>
+
+        <div>
+
+            <h2>
+                Datos de contacto
+            </h2>
+
+            <p>
+                Aquí enviaremos la información de la reserva.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="card">
+
+
+        <div class="form-grid">
+
+
+            <div class="form-group">
+
+                <label>
+                    Nombre de contacto
+                </label>
+
+                <input type="text"
+                       id="contactoNombre"
+                       placeholder="Nombre completo">
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Correo electrónico
+                </label>
+
+                <input type="email"
+                       id="contactoEmail"
+                       placeholder="correo@ejemplo.com">
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Teléfono
+                </label>
+
+                <input type="tel"
+                       id="contactoTelefono"
+                       placeholder="+51 999 999 999">
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Contacto de emergencia
+                </label>
+
+                <input type="text"
+                       id="contactoEmergencia"
+                       placeholder="Nombre y teléfono">
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =====================================================
+     PAGO SIMULADO
+===================================================== -->
+
+<section class="section">
+
+
+    <div class="section-title">
+
+        <div class="number">
+            💳
+        </div>
+
+        <div>
+
+            <h2>
+                Forma de pago
+            </h2>
+
+            <p>
+                Simulación académica de pago.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="payment-card">
+
+
+        <div class="payment-options">
+
+            <label>
+
+                <input type="radio"
+                       name="pago"
+                       value="Tarjeta"
+                       checked>
+
+                💳 Tarjeta
+
+            </label>
+
+
+            <label>
+
+                <input type="radio"
+                       name="pago"
+                       value="Yape">
+
+                📱 Yape
+
+            </label>
+
+
+            <label>
+
+                <input type="radio"
+                       name="pago"
+                       value="Plin">
+
+                📲 Plin
+
+            </label>
+
+        </div>
+
+
+        <div class="form-grid">
+
+
+            <div class="form-group">
+
+                <label>
+                    Número de tarjeta
+                </label>
+
+                <input type="text"
+                       placeholder="XXXX XXXX XXXX XXXX">
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Titular
+                </label>
+
+                <input type="text"
+                       placeholder="Nombre del titular">
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Vencimiento
+                </label>
+
+                <input type="text"
+                       placeholder="MM / AA">
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    CVV
+                </label>
+
+                <input type="password"
+                       placeholder="***">
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =====================================================
+     TOTAL
+===================================================== -->
+
+<section class="total-box">
+
+
+    <div>
+
+        <span>
+            TOTAL DE LA RESERVA
+        </span>
+
+        <strong id="precioTotal">
+            S/ 0.00
+        </strong>
+
+    </div>
+
+
+    <button
+        class="btn-confirm"
+        onclick="confirmarReserva()">
+
+        ✓ Confirmar y generar reserva
+
+    </button>
+
+</section>
+
+
+
+<!-- =====================================================
+     CONFIRMACIÓN
+===================================================== -->
+
+<section class="section"
+         id="confirmacion">
+
+
+    <div class="section-title">
+
+        <div class="number">
+            05
+        </div>
+
+        <div>
+
+            <h2>
+                Confirmación de reserva
+            </h2>
+
+            <p>
+                Tu reserva aparecerá aquí.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div id="resultado">
+
+        <div class="message">
+
+            🧾 Completa el proceso para
+            generar tu reserva.
+
+        </div>
+
+    </div>
+
+</section>
+
+
+</main>
+
+
+
+<!-- =====================================================
+     FOOTER
+===================================================== -->
+
+<footer>
+
+
+    <div class="footer-logo">
+
+        ✈️ ANDES SKY TRAVEL
+
+    </div>
+
+
+    <p>
+        Viaja. Descubre. Vive.
+    </p>
+
+
+    <div class="footer-line"></div>
+
+
+    <p class="author">
+
+        Elaborado por:
+        <strong>
+            MARIO HERRADA GUTIERREZ
+        </strong>
+
+    </p>
+
+
+    <small>
+
+        Proyecto académico -
+        Lenguaje de Programación II
+
+    </small>
+
+
+</footer>
+
+
+
+<script src="script.js"></script>
+
+</body>
+
+</html>
