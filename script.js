@@ -1,66 +1,362 @@
-/* =====================================================
+/* =========================================================
    ANDES SKY TRAVEL
    SISTEMA DE RESERVAS
-===================================================== */
+   ========================================================= */
 
 
-/* =====================================================
+/* =========================================================
    VARIABLES
-===================================================== */
+   ========================================================= */
+
+let tipoVuelo = "nacional";
 
 let tipoViaje = "ida-vuelta";
 
+let monedaActual = "PEN";
+
 let vueloSeleccionado = null;
 
-let vuelosDisponibles = [];
+let asientosSeleccionados = [];
 
-let asientosSeleccionados = {};
-
-let pasajerosRegistrados = [];
+let pasajeros = {
+    adultos: 1,
+    ninos: 0,
+    infantes: 0
+};
 
 let codigoReservaActual = "";
 
+let precioBaseActual = 0;
 
-/* =====================================================
-   PRECIOS
-===================================================== */
 
-const precios = {
+/* =========================================================
+   TASA DE CAMBIO
+   ========================================================= */
 
-    "Cusco": 289,
+const TASA_CAMBIO = 3.50;
 
-    "Arequipa": 249,
 
-    "Iquitos": 390,
+/* =========================================================
+   🇵🇪 AEROPUERTOS NACIONALES
+   ========================================================= */
 
-    "Santiago": 680,
+const aeropuertosPeru = [
 
-    "Buenos Aires": 1100,
+    {
+        ciudad: "Lima",
+        pais: "Perú",
+        codigo: "LIM",
+        aeropuerto: "Jorge Chávez"
+    },
 
-    "Cartagena": 850,
+    {
+        ciudad: "Arequipa",
+        pais: "Perú",
+        codigo: "AQP",
+        aeropuerto: "Rodríguez Ballón"
+    },
 
-    "Miami": 1480,
+    {
+        ciudad: "Cusco",
+        pais: "Perú",
+        codigo: "CUZ",
+        aeropuerto: "Alejandro Velasco Astete"
+    },
 
-    "Nueva York": 1750,
+    {
+        ciudad: "Trujillo",
+        pais: "Perú",
+        codigo: "TRU",
+        aeropuerto: "Capitán FAP Carlos Martínez"
+    },
 
-    "Madrid": 1850,
+    {
+        ciudad: "Piura",
+        pais: "Perú",
+        codigo: "PIU",
+        aeropuerto: "Guillermo Concha Iberico"
+    },
 
-    "París": 2450,
+    {
+        ciudad: "Iquitos",
+        pais: "Perú",
+        codigo: "IQT",
+        aeropuerto: "Coronel FAP Francisco Secada"
+    },
 
-    "Roma": 2600,
+    {
+        ciudad: "Tarapoto",
+        pais: "Perú",
+        codigo: "TPP",
+        aeropuerto: "Cadete FAP Guillermo del Castillo"
+    },
 
-    "Londres": 2750,
+    {
+        ciudad: "Chiclayo",
+        pais: "Perú",
+        codigo: "CIX",
+        aeropuerto: "Capitán FAP José Quiñones"
+    },
 
-    "Tokio": 3900,
+    {
+        ciudad: "Juliaca",
+        pais: "Perú",
+        codigo: "JUL",
+        aeropuerto: "Inca Manco Cápac"
+    },
 
-    "Dubái": 3200
+    {
+        ciudad: "Tacna",
+        pais: "Perú",
+        codigo: "TCQ",
+        aeropuerto: "Coronel FAP Carlos Ciriani"
+    }
+
+];
+
+
+/* =========================================================
+   🌎 AEROPUERTOS INTERNACIONALES
+   =========================================================
+
+   IMPORTANTE:
+
+   Cuando el usuario selecciona INTERNACIONAL,
+   ya NO cargamos la lista de departamentos
+   del Perú.
+
+   Se utiliza este catálogo internacional.
+
+   Incluye Perú como punto de conexión internacional,
+   pero ahora se muestra como:
+
+   Lima - Perú (LIM)
+
+   y no simplemente como "Lima".
+   ========================================================= */
+
+const aeropuertosInternacionales = [
+
+    {
+        ciudad: "Lima",
+        pais: "Perú",
+        codigo: "LIM"
+    },
+
+    {
+        ciudad: "Cusco",
+        pais: "Perú",
+        codigo: "CUZ"
+    },
+
+    {
+        ciudad: "Santiago",
+        pais: "Chile",
+        codigo: "SCL"
+    },
+
+    {
+        ciudad: "Buenos Aires",
+        pais: "Argentina",
+        codigo: "EZE"
+    },
+
+    {
+        ciudad: "Bogotá",
+        pais: "Colombia",
+        codigo: "BOG"
+    },
+
+    {
+        ciudad: "Cartagena",
+        pais: "Colombia",
+        codigo: "CTG"
+    },
+
+    {
+        ciudad: "São Paulo",
+        pais: "Brasil",
+        codigo: "GRU"
+    },
+
+    {
+        ciudad: "Río de Janeiro",
+        pais: "Brasil",
+        codigo: "GIG"
+    },
+
+    {
+        ciudad: "Ciudad de México",
+        pais: "México",
+        codigo: "MEX"
+    },
+
+    {
+        ciudad: "Miami",
+        pais: "Estados Unidos",
+        codigo: "MIA"
+    },
+
+    {
+        ciudad: "Nueva York",
+        pais: "Estados Unidos",
+        codigo: "JFK"
+    },
+
+    {
+        ciudad: "Los Ángeles",
+        pais: "Estados Unidos",
+        codigo: "LAX"
+    },
+
+    {
+        ciudad: "Madrid",
+        pais: "España",
+        codigo: "MAD"
+    },
+
+    {
+        ciudad: "Barcelona",
+        pais: "España",
+        codigo: "BCN"
+    },
+
+    {
+        ciudad: "París",
+        pais: "Francia",
+        codigo: "CDG"
+    },
+
+    {
+        ciudad: "Roma",
+        pais: "Italia",
+        codigo: "FCO"
+    },
+
+    {
+        ciudad: "Londres",
+        pais: "Reino Unido",
+        codigo: "LHR"
+    },
+
+    {
+        ciudad: "Ámsterdam",
+        pais: "Países Bajos",
+        codigo: "AMS"
+    },
+
+    {
+        ciudad: "Frankfurt",
+        pais: "Alemania",
+        codigo: "FRA"
+    },
+
+    {
+        ciudad: "Tokio",
+        pais: "Japón",
+        codigo: "NRT"
+    },
+
+    {
+        ciudad: "Dubái",
+        pais: "Emiratos Árabes Unidos",
+        codigo: "DXB"
+    }
+
+];
+
+
+/* =========================================================
+   PRECIOS NACIONALES
+   MONEDA BASE: USD
+   ========================================================= */
+
+const preciosNacionales = {
+
+    "LIM-CUZ": 120,
+    "LIM-AQP": 95,
+    "LIM-TRU": 85,
+    "LIM-PIU": 90,
+    "LIM-IQT": 110,
+    "LIM-TPP": 105,
+    "LIM-CIX": 90,
+    "LIM-JUL": 115,
+    "LIM-TCQ": 125,
+
+    "CUZ-LIM": 120,
+    "AQP-LIM": 95,
+    "TRU-LIM": 85,
+    "PIU-LIM": 90,
+    "IQT-LIM": 110,
+    "TPP-LIM": 105,
+    "CIX-LIM": 90,
+    "JUL-LIM": 115,
+    "TCQ-LIM": 125
 
 };
 
 
-/* =====================================================
+/* =========================================================
+   PRECIOS INTERNACIONALES
+   MONEDA BASE: USD
+   ========================================================= */
+
+const preciosInternacionales = {
+
+    "LIM-SCL": 280,
+    "LIM-EZE": 350,
+    "LIM-BOG": 250,
+    "LIM-CTG": 290,
+    "LIM-GRU": 320,
+    "LIM-GIG": 340,
+    "LIM-MEX": 390,
+    "LIM-MIA": 420,
+    "LIM-JFK": 650,
+    "LIM-LAX": 690,
+    "LIM-MAD": 720,
+    "LIM-BCN": 760,
+    "LIM-CDG": 850,
+    "LIM-FCO": 890,
+    "LIM-LHR": 930,
+    "LIM-AMS": 950,
+    "LIM-FRA": 970,
+    "LIM-NRT": 1250,
+    "LIM-DXB": 1100,
+
+    "SCL-LIM": 280,
+    "EZE-LIM": 350,
+    "BOG-LIM": 250,
+    "MIA-LIM": 420,
+    "JFK-LIM": 650,
+    "MAD-LIM": 720,
+    "CDG-LIM": 850,
+    "FCO-LIM": 890,
+    "LHR-LIM": 930,
+    "NRT-LIM": 1250,
+    "DXB-LIM": 1100
+
+};
+
+
+/* =========================================================
+   SERVICIOS
+   ========================================================= */
+
+const preciosServicios = {
+
+    hotel: 150,
+    comida: 30,
+    equipaje: 80,
+    traslado: 50,
+    seguro: 70,
+    wifi: 25
+
+};
+
+
+/* =========================================================
    ASIENTOS OCUPADOS
-===================================================== */
+   ========================================================= */
 
 const asientosOcupados = [
 
@@ -72,501 +368,536 @@ const asientosOcupados = [
     "6C",
     "7A",
     "8D",
-    "9B",
-    "10C",
-    "12A",
-    "14D",
-    "16B",
-    "18C"
+    "10B",
+    "12C",
+    "14A",
+    "16D",
+    "18B",
+    "20C"
 
 ];
 
 
-/* =====================================================
-   CÓDIGOS DE AEROPUERTOS
-===================================================== */
+/* =========================================================
+   INICIO
+   ========================================================= */
 
-const aeropuertos = {
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
 
-    "Lima": "LIM",
+        cargarOrigenes();
 
-    "Cusco": "CUZ",
+        cargarEstadoAeropuertos();
 
-    "Arequipa": "AQP",
+        establecerFechaMinima();
 
-    "Iquitos": "IQT",
-
-    "Santiago": "SCL",
-
-    "Buenos Aires": "EZE",
-
-    "Bogotá": "BOG",
-
-    "Cartagena": "CTG",
-
-    "Miami": "MIA",
-
-    "Nueva York": "JFK",
-
-    "Madrid": "MAD",
-
-    "París": "CDG",
-
-    "Roma": "FCO",
-
-    "Londres": "LHR",
-
-    "Tokio": "NRT",
-
-    "Dubái": "DXB"
-
-};
+    }
+);
 
 
-/* =====================================================
-   TIPO DE VIAJE
-===================================================== */
+/* =========================================================
+   PESTAÑAS
+   ========================================================= */
 
-function seleccionarTipoViaje(tipo, boton) {
+function mostrarPanel(panel, boton) {
 
-    tipoViaje = tipo;
+    document
+        .querySelectorAll(".panel")
+        .forEach(
+            p =>
+                p.classList.remove(
+                    "active-panel"
+                )
+        );
 
 
     document
-        .querySelectorAll(".trip-option")
+        .querySelectorAll(".tab")
         .forEach(
-            function(elemento) {
+            t =>
+                t.classList.remove(
+                    "active"
+                )
+        );
 
-                elemento.classList.remove(
-                    "selected"
+
+    if (panel === "reservar") {
+
+        document
+            .getElementById(
+                "panelReservar"
+            )
+            .classList.add(
+                "active-panel"
+            );
+
+    }
+
+    else if (panel === "administrar") {
+
+        document
+            .getElementById(
+                "panelAdministrar"
+            )
+            .classList.add(
+                "active-panel"
+            );
+
+    }
+
+    else {
+
+        document
+            .getElementById(
+                "panelEstado"
+            )
+            .classList.add(
+                "active-panel"
+            );
+
+    }
+
+
+    boton.classList.add(
+        "active"
+    );
+
+}
+
+
+/* =========================================================
+   SELECCIONAR TIPO DE VUELO
+   ========================================================= */
+
+function seleccionarTipoVuelo(tipo) {
+
+    tipoVuelo = tipo;
+
+
+    document
+        .getElementById(
+            "btnNacional"
+        )
+        .classList.remove(
+            "selected"
+        );
+
+
+    document
+        .getElementById(
+            "btnInternacional"
+        )
+        .classList.remove(
+            "selected"
+        );
+
+
+    if (
+        tipo === "nacional"
+    ) {
+
+        document
+            .getElementById(
+                "btnNacional"
+            )
+            .classList.add(
+                "selected"
+            );
+
+    }
+
+    else {
+
+        document
+            .getElementById(
+                "btnInternacional"
+            )
+            .classList.add(
+                "selected"
+            );
+
+    }
+
+
+    /*
+       Cada vez que cambia Nacional /
+       Internacional se vuelven a
+       cargar ORIGEN y DESTINO.
+    */
+
+    cargarOrigenes();
+
+}
+
+
+/* =========================================================
+   CARGAR ORÍGENES
+   ========================================================= */
+
+function cargarOrigenes() {
+
+    const origen =
+        document.getElementById(
+            "origen"
+        );
+
+
+    origen.innerHTML = "";
+
+
+    /*
+       🇵🇪 NACIONAL
+
+       Origen:
+       solamente aeropuertos del Perú.
+    */
+
+    if (
+        tipoVuelo === "nacional"
+    ) {
+
+        aeropuertosPeru.forEach(
+            aeropuerto => {
+
+                agregarOpcion(
+                    origen,
+                    aeropuerto.codigo,
+                    `${aeropuerto.ciudad} (${aeropuerto.codigo})`
                 );
 
             }
         );
 
-
-    boton.classList.add(
-        "selected"
-    );
+    }
 
 
-    const retorno =
-        document.getElementById(
-            "fechaRetorno"
+    /*
+       🌎 INTERNACIONAL
+
+       Origen:
+       catálogo de aeropuertos internacionales.
+
+       Ya NO se utiliza la lista
+       de departamentos del Perú.
+    */
+
+    else {
+
+        aeropuertosInternacionales.forEach(
+            aeropuerto => {
+
+                agregarOpcion(
+                    origen,
+                    aeropuerto.codigo,
+                    `${aeropuerto.ciudad} - ${aeropuerto.pais} (${aeropuerto.codigo})`
+                );
+
+            }
         );
 
+        /*
+           Para una agencia peruana,
+           dejamos Lima como origen
+           inicial.
+        */
 
-    if (tipo === "solo-ida") {
-
-        retorno.disabled = true;
-
-        retorno.value = "";
-
-    } else {
-
-        retorno.disabled = false;
+        origen.value = "LIM";
 
     }
 
-}
 
-
-/* =====================================================
-   TOTAL DE PASAJEROS
-===================================================== */
-
-function obtenerCantidadPasajeros() {
-
-    const adultos =
-        Number(
-            document.getElementById(
-                "adultos"
-            ).value
-        ) || 0;
-
-
-    const ninos =
-        Number(
-            document.getElementById(
-                "ninos"
-            ).value
-        ) || 0;
-
-
-    const infantes =
-        Number(
-            document.getElementById(
-                "infantes"
-            ).value
-        ) || 0;
-
-
-    return adultos + ninos + infantes;
+    actualizarDestino();
 
 }
 
 
-/* =====================================================
-   GENERAR PASAJEROS
-===================================================== */
+/* =========================================================
+   AGREGAR OPCIÓN
+   ========================================================= */
 
-function generarPasajeros() {
+function agregarOpcion(
+    select,
+    valor,
+    texto
+) {
 
-    const adultos =
-        Number(
-            document.getElementById(
-                "adultos"
-            ).value
+    const option =
+        document.createElement(
+            "option"
         );
 
 
-    const ninos =
-        Number(
-            document.getElementById(
-                "ninos"
-            ).value
-        );
+    option.value =
+        valor;
 
 
-    const infantes =
-        Number(
-            document.getElementById(
-                "infantes"
-            ).value
-        );
+    option.textContent =
+        texto;
 
 
-    const total =
-        adultos +
-        ninos +
-        infantes;
+    select.appendChild(
+        option
+    );
+
+}
 
 
-    const contenedor =
+/* =========================================================
+   CARGAR DESTINOS
+   ========================================================= */
+
+function actualizarDestino() {
+
+    const origen =
         document.getElementById(
-            "contenedorPasajeros"
+            "origen"
+        ).value;
+
+
+    const destino =
+        document.getElementById(
+            "destino"
         );
 
 
-    contenedor.innerHTML = "";
+    destino.innerHTML = "";
 
 
-    pasajerosRegistrados = [];
+    /*
+       🇵🇪 NACIONAL
 
-    asientosSeleccionados = {};
+       Origen y destino pertenecen
+       únicamente al Perú.
+    */
+
+    if (
+        tipoVuelo === "nacional"
+    ) {
+
+        aeropuertosPeru
+            .filter(
+                aeropuerto =>
+                    aeropuerto.codigo !== origen
+            )
+            .forEach(
+                aeropuerto => {
+
+                    agregarOpcion(
+                        destino,
+                        aeropuerto.codigo,
+                        `${aeropuerto.ciudad} (${aeropuerto.codigo})`
+                    );
+
+                }
+            );
+
+    }
 
 
-    if (total === 0) {
+    /*
+       🌎 INTERNACIONAL
 
-        contenedor.innerHTML = `
+       Origen y destino pertenecen
+       al catálogo internacional.
 
-            <div class="message">
+       No se carga la lista de
+       departamentos nacionales.
+    */
 
-                👥 Selecciona pasajeros.
+    else {
 
-            </div>
+        aeropuertosInternacionales
+            .filter(
+                aeropuerto =>
+                    aeropuerto.codigo !== origen
+            )
+            .forEach(
+                aeropuerto => {
 
-        `;
+                    agregarOpcion(
+                        destino,
+                        aeropuerto.codigo,
+                        `${aeropuerto.ciudad} - ${aeropuerto.pais} (${aeropuerto.codigo})`
+                    );
+
+                }
+            );
+
+    }
+
+
+    actualizarTextoRuta();
+
+}
+
+
+/* =========================================================
+   TEXTO DE RUTA
+   ========================================================= */
+
+function actualizarTextoRuta() {
+
+    const origen =
+        document.getElementById(
+            "origen"
+        );
+
+
+    const destino =
+        document.getElementById(
+            "destino"
+        );
+
+
+    const info =
+        document.getElementById(
+            "infoRuta"
+        );
+
+
+    if (
+        !origen.value ||
+        !destino.value
+    ) {
+
+        info.textContent =
+            "Seleccione origen y destino.";
 
         return;
 
     }
 
 
-    let numero = 1;
-
-
-    for (
-        let i = 1;
-        i <= adultos;
-        i++
-    ) {
-
-        crearPasajero(
-            numero,
-            "Adulto",
-            contenedor
+    info.textContent =
+        `${origen.value} → ${destino.value} | ` +
+        (
+            tipoVuelo === "nacional"
+                ? "Vuelo nacional dentro del Perú"
+                : "Vuelo internacional"
         );
-
-        numero++;
-
-    }
-
-
-    for (
-        let i = 1;
-        i <= ninos;
-        i++
-    ) {
-
-        crearPasajero(
-            numero,
-            "Niño",
-            contenedor
-        );
-
-        numero++;
-
-    }
-
-
-    for (
-        let i = 1;
-        i <= infantes;
-        i++
-    ) {
-
-        crearPasajero(
-            numero,
-            "Infante",
-            contenedor
-        );
-
-        numero++;
-
-    }
-
-
-    generarAsientos();
-
-    actualizarContador();
-
-    calcularTotal();
 
 }
 
 
-/* =====================================================
-   CREAR PASAJERO
-===================================================== */
+/* =========================================================
+   TIPO DE VIAJE
+   ========================================================= */
 
-function crearPasajero(
-    numero,
-    tipo,
-    contenedor
-) {
+function cambiarTipoViaje() {
+
+    tipoViaje =
+        document.querySelector(
+            'input[name="tipoViaje"]:checked'
+        ).value;
 
 
-    const div =
-        document.createElement(
-            "div"
+    const campoRetorno =
+        document.getElementById(
+            "campoRetorno"
         );
 
 
-    div.className =
-        "passenger";
+    const fechaRetorno =
+        document.getElementById(
+            "fechaRetorno"
+        );
 
 
-    div.innerHTML = `
+    if (
+        tipoViaje === "solo-ida"
+    ) {
 
-        <div class="passenger-header">
+        campoRetorno.style.opacity =
+            "0.45";
 
-            <h3>
-                👤 Pasajero ${numero}
-            </h3>
+        fechaRetorno.disabled =
+            true;
 
-            <span class="passenger-tag">
-                ${tipo.toUpperCase()}
-            </span>
+        fechaRetorno.value =
+            "";
 
-        </div>
+    }
 
+    else {
 
-        <div class="form-grid">
+        campoRetorno.style.opacity =
+            "1";
 
+        fechaRetorno.disabled =
+            false;
 
-            <div class="form-group">
+    }
 
-                <label>
-                    Nombres
-                </label>
+}
 
-                <input
-                    type="text"
-                    id="nombre${numero}"
-                    placeholder="Nombres">
 
-            </div>
+/* =========================================================
+   PASAJEROS
+   ========================================================= */
 
+function cambiarPasajeros(
+    tipo,
+    cantidad
+) {
 
-            <div class="form-group">
+    pasajeros[tipo] += cantidad;
 
-                <label>
-                    Apellidos
-                </label>
 
-                <input
-                    type="text"
-                    id="apellido${numero}"
-                    placeholder="Apellidos">
+    if (
+        pasajeros[tipo] < 0
+    ) {
 
-            </div>
+        pasajeros[tipo] = 0;
 
+    }
 
-            <div class="form-group">
 
-                <label>
-                    Tipo de documento
-                </label>
+    if (
+        tipo === "adultos" &&
+        pasajeros[tipo] < 1
+    ) {
 
-                <select id="tipoDoc${numero}">
+        pasajeros[tipo] = 1;
 
-                    <option value="">
-                        Seleccione
-                    </option>
+    }
 
-                    <option value="DNI">
-                        DNI
-                    </option>
 
-                    <option value="Pasaporte">
-                        Pasaporte
-                    </option>
+    document
+        .getElementById(tipo)
+        .textContent =
+        pasajeros[tipo];
 
-                    <option value="CE">
-                        Carné de Extranjería
-                    </option>
 
-                </select>
+    actualizarContador();
 
-            </div>
+}
 
 
-            <div class="form-group">
+/* =========================================================
+   TOTAL PASAJEROS
+   ========================================================= */
 
-                <label>
-                    Número de documento
-                </label>
+function obtenerTotalPasajeros() {
 
-                <input
-                    type="text"
-                    id="documento${numero}"
-                    placeholder="Número">
+    return (
 
-            </div>
+        pasajeros.adultos +
 
+        pasajeros.ninos +
 
-            <div class="form-group">
+        pasajeros.infantes
 
-                <label>
-                    Fecha de nacimiento
-                </label>
-
-                <input
-                    type="date"
-                    id="nacimiento${numero}">
-
-            </div>
-
-
-            <div class="form-group">
-
-                <label>
-                    Nacionalidad
-                </label>
-
-                <select id="nacionalidad${numero}">
-
-                    <option value="Peruana">
-                        Peruana
-                    </option>
-
-                    <option value="Chilena">
-                        Chilena
-                    </option>
-
-                    <option value="Argentina">
-                        Argentina
-                    </option>
-
-                    <option value="Colombiana">
-                        Colombiana
-                    </option>
-
-                    <option value="Estadounidense">
-                        Estadounidense
-                    </option>
-
-                    <option value="Española">
-                        Española
-                    </option>
-
-                    <option value="Francesa">
-                        Francesa
-                    </option>
-
-                    <option value="Italiana">
-                        Italiana
-                    </option>
-
-                    <option value="Otra">
-                        Otra
-                    </option>
-
-                </select>
-
-            </div>
-
-
-            <div class="form-group">
-
-                <label>
-                    Género
-                </label>
-
-                <select id="genero${numero}">
-
-                    <option value="">
-                        Seleccione
-                    </option>
-
-                    <option value="Masculino">
-                        Masculino
-                    </option>
-
-                    <option value="Femenino">
-                        Femenino
-                    </option>
-
-                    <option value="Otro">
-                        Otro
-                    </option>
-
-                </select>
-
-            </div>
-
-
-            <div class="form-group">
-
-                <label>
-                    Correo electrónico
-                </label>
-
-                <input
-                    type="email"
-                    id="email${numero}"
-                    placeholder="correo@ejemplo.com">
-
-            </div>
-
-        </div>
-
-    `;
-
-
-    contenedor.appendChild(
-        div
     );
 
 }
 
 
-/* =====================================================
-   GENERAR VUELOS
-===================================================== */
+/* =========================================================
+   BUSCAR VUELOS
+   ========================================================= */
 
-function generarVuelos() {
+function buscarVuelos() {
 
     const origen =
         document.getElementById(
@@ -580,11 +911,171 @@ function generarVuelos() {
         ).value;
 
 
-    const fecha =
+    const fechaSalida =
         document.getElementById(
-            "fechaIda"
+            "fechaSalida"
         ).value;
 
+
+    const fechaRetorno =
+        document.getElementById(
+            "fechaRetorno"
+        ).value;
+
+
+    if (
+        !fechaSalida
+    ) {
+
+        alert(
+            "Seleccione la fecha de salida."
+        );
+
+        return;
+
+    }
+
+
+    if (
+        tipoViaje === "ida-vuelta" &&
+        !fechaRetorno
+    ) {
+
+        alert(
+            "Seleccione la fecha de retorno."
+        );
+
+        return;
+
+    }
+
+
+    if (
+        tipoViaje === "ida-vuelta" &&
+        fechaRetorno < fechaSalida
+    ) {
+
+        alert(
+            "La fecha de retorno no puede ser anterior a la fecha de salida."
+        );
+
+        return;
+
+    }
+
+
+    /*
+       VALIDACIÓN NACIONAL
+    */
+
+    if (
+        tipoVuelo === "nacional" &&
+        (
+            !preciosNacionales[
+                `${origen}-${destino}`
+            ]
+        )
+    ) {
+
+        alert(
+            "La ruta nacional seleccionada no se encuentra disponible."
+        );
+
+        return;
+
+    }
+
+
+    /*
+       VALIDACIÓN INTERNACIONAL
+    */
+
+    if (
+        tipoVuelo === "internacional" &&
+        (
+            !preciosInternacionales[
+                `${origen}-${destino}`
+            ]
+        )
+    ) {
+
+        alert(
+            "La ruta internacional seleccionada no se encuentra disponible."
+        );
+
+        return;
+
+    }
+
+
+    const ruta =
+        `${origen}-${destino}`;
+
+
+    let precio = 0;
+
+
+    if (
+        tipoVuelo === "nacional"
+    ) {
+
+        precio =
+            preciosNacionales[
+                ruta
+            ];
+
+    }
+
+    else {
+
+        precio =
+            preciosInternacionales[
+                ruta
+            ];
+
+    }
+
+
+    precioBaseActual =
+        precio;
+
+
+    generarVuelos(
+        origen,
+        destino,
+        precio
+    );
+
+
+    document
+        .getElementById(
+            "resultados"
+        )
+        .classList.remove(
+            "hidden"
+        );
+
+
+    document
+        .getElementById(
+            "resultados"
+        )
+        .scrollIntoView({
+            behavior: "smooth"
+        });
+
+}
+
+
+/* =========================================================
+   GENERAR VUELOS
+   ========================================================= */
+
+function generarVuelos(
+    origen,
+    destino,
+    precioBase
+) {
 
     const lista =
         document.getElementById(
@@ -592,236 +1083,114 @@ function generarVuelos() {
         );
 
 
-    if (
-        !origen ||
-        !destino ||
-        !fecha
-    ) {
-
-        lista.innerHTML = `
-
-            <div class="message">
-
-                ✈️ Selecciona origen,
-                destino y fecha.
-
-            </div>
-
-        `;
-
-        return;
-
-    }
+    lista.innerHTML = "";
 
 
-    if (origen === destino) {
-
-        lista.innerHTML = `
-
-            <div class="message">
-
-                ⚠️ Origen y destino
-                deben ser diferentes.
-
-            </div>
-
-        `;
-
-        return;
-
-    }
-
-
-    const precio =
-        precios[destino] || 800;
-
-
-    const internacional =
-        obtenerCodigoAeropuerto(
-            origen
-        ) !== "" &&
-        ![
-            "LIM",
-            "CUZ",
-            "AQP",
-            "IQT"
-        ].includes(
-            obtenerCodigoAeropuerto(
-                destino
-            )
-        );
-
-
-    let suplemento =
-        internacional ? 300 : 0;
-
-
-    vuelosDisponibles = [
+    const horarios = [
 
         {
-
-            codigo: "AST-201",
-
             salida: "06:30",
-
             llegada: "08:00",
-
-            duracion: "1h 30m",
-
-            escalas: "Directo",
-
-            precio:
-                precio + suplemento
-
+            duracion: "1h 30min",
+            escalas: "Directo"
         },
 
-
         {
-
-            codigo: "AST-305",
-
-            salida: "10:20",
-
-            llegada: "13:10",
-
-            duracion: "2h 50m",
-
-            escalas: "1 escala",
-
-            precio:
-                precio +
-                suplemento +
-                120
-
+            salida: "10:15",
+            llegada: "11:45",
+            duracion: "1h 30min",
+            escalas: "Directo"
         },
 
-
         {
-
-            codigo: "AST-417",
-
-            salida: "18:40",
-
-            llegada: "21:50",
-
-            duracion: "3h 10m",
-
-            escalas: "1 escala",
-
-            precio:
-                precio +
-                suplemento +
-                180
-
+            salida: "15:20",
+            llegada: "16:50",
+            duracion: "1h 30min",
+            escalas: "Directo"
         }
 
     ];
 
 
-    lista.innerHTML = "";
+    horarios.forEach(
+        (vuelo, index) => {
+
+            const precio =
+                precioBase +
+                (index * 15);
 
 
-    vuelosDisponibles.forEach(
-        function(
-            vuelo,
-            indice
-        ) {
+            const precioMostrar =
+                convertirPrecio(
+                    precio
+                );
 
 
-            const div =
+            const card =
                 document.createElement(
                     "div"
                 );
 
 
-            div.className =
-                "flight";
+            card.className =
+                "flight-card";
 
 
-            div.onclick =
-                function() {
-
-                    seleccionarVuelo(
-                        indice,
-                        div
-                    );
-
-                };
-
-
-            div.innerHTML = `
+            card.innerHTML = `
 
                 <div>
 
-                    <div class="flight-code">
+                    <div class="airline-name">
+                        ANDES SKY
+                    </div>
 
-                        ✈ ${vuelo.codigo}
+                    <small>
+                        AS ${245 + index}
+                    </small>
+
+                </div>
+
+
+                <div class="flight-route">
+
+                    <div>
+
+                        <div class="flight-time">
+                            ${vuelo.salida}
+                        </div>
+
+                        <div class="flight-code">
+                            ${origen}
+                        </div>
 
                     </div>
 
-                    <div class="flight-company">
+                    <span>→</span>
 
-                        ANDES SKY TRAVEL
+                    <div>
+
+                        <div class="flight-time">
+                            ${vuelo.llegada}
+                        </div>
+
+                        <div class="flight-code">
+                            ${destino}
+                        </div>
 
                     </div>
 
                 </div>
 
 
-                <div class="flight-times">
+                <div class="flight-duration">
 
-
-                    <div>
-
-                        <div class="flight-time">
-
-                            ${vuelo.salida}
-
-                        </div>
-
-                        <div class="flight-city">
-
-                            ${obtenerCodigoAeropuerto(
-                                origen
-                            )}
-
-                        </div>
-
-                    </div>
-
-
-                    <div class="flight-duration">
-
-                        ───── ✈ ─────
-
-                        <br>
-
+                    <strong>
                         ${vuelo.duracion}
+                    </strong>
 
-                        <br>
+                    <br>
 
-                        ${vuelo.escalas}
-
-                    </div>
-
-
-                    <div>
-
-                        <div class="flight-time">
-
-                            ${vuelo.llegada}
-
-                        </div>
-
-                        <div class="flight-city">
-
-                            ${obtenerCodigoAeropuerto(
-                                destino
-                            )}
-
-                        </div>
-
-                    </div>
+                    ${vuelo.escalas}
 
                 </div>
 
@@ -829,14 +1198,42 @@ function generarVuelos() {
                 <div class="flight-price">
 
                     <strong>
-
-                        S/ ${vuelo.precio}
-
+                        ${precioMostrar}
                     </strong>
 
                     <small>
-                        por pasajero
+                        por persona
                     </small>
+
+                    <button
+                        onclick='seleccionarVuelo(
+                            ${JSON.stringify({
+                                numero:
+                                    `AS${245 + index}`,
+
+                                origen:
+                                    origen,
+
+                                destino:
+                                    destino,
+
+                                salida:
+                                    vuelo.salida,
+
+                                llegada:
+                                    vuelo.llegada,
+
+                                duracion:
+                                    vuelo.duracion,
+
+                                precio:
+                                    precio
+                            })}
+                        '>
+
+                        SELECCIONAR
+
+                    </button>
 
                 </div>
 
@@ -844,7 +1241,7 @@ function generarVuelos() {
 
 
             lista.appendChild(
-                div
+                card
             );
 
         }
@@ -853,80 +1250,238 @@ function generarVuelos() {
 }
 
 
-/* =====================================================
+/* =========================================================
    SELECCIONAR VUELO
-===================================================== */
+   ========================================================= */
 
 function seleccionarVuelo(
-    indice,
-    elemento
+    vuelo
 ) {
+
+    vueloSeleccionado =
+        vuelo;
+
+
+    asientosSeleccionados =
+        [];
+
+
+    generarFormularioPasajeros();
+
+    generarAsientos();
 
 
     document
-        .querySelectorAll(".flight")
-        .forEach(
-            function(
-                vuelo
-            ) {
-
-                vuelo.classList.remove(
-                    "selected"
-                );
-
-            }
+        .getElementById(
+            "seccionPasajeros"
+        )
+        .classList.remove(
+            "hidden"
         );
 
 
-    elemento.classList.add(
-        "selected"
-    );
+    document
+        .getElementById(
+            "seccionAsientos"
+        )
+        .classList.remove(
+            "hidden"
+        );
 
 
-    vueloSeleccionado =
-        vuelosDisponibles[
-            indice
-        ];
+    document
+        .getElementById(
+            "servicios"
+        )
+        .classList.remove(
+            "hidden"
+        );
 
 
-    calcularTotal();
+    document
+        .getElementById(
+            "seccionContacto"
+        )
+        .classList.remove(
+            "hidden"
+        );
+
+
+    document
+        .getElementById(
+            "seccionPago"
+        )
+        .classList.remove(
+            "hidden"
+        );
+
+
+    actualizarTotal();
+
+
+    document
+        .getElementById(
+            "seccionPasajeros"
+        )
+        .scrollIntoView({
+            behavior: "smooth"
+        });
 
 }
 
 
-/* =====================================================
-   GENERAR ASIENTOS
-===================================================== */
+/* =========================================================
+   FORMULARIO PASAJEROS
+   ========================================================= */
 
-function generarAsientos() {
+function generarFormularioPasajeros() {
 
-
-    const total =
-        obtenerCantidadPasajeros();
-
-
-    const mapa =
+    const contenedor =
         document.getElementById(
-            "mapaAsientos"
+            "formPasajeros"
         );
 
 
-    if (!total) {
+    contenedor.innerHTML = "";
 
-        mapa.innerHTML = `
 
-            <div class="message">
+    const total =
+        obtenerTotalPasajeros();
 
-                💺 Selecciona pasajeros
-                para habilitar los asientos.
+
+    for (
+        let i = 1;
+        i <= total;
+        i++
+    ) {
+
+        let tipo =
+            "Adulto";
+
+
+        if (
+            i >
+            pasajeros.adultos
+        ) {
+
+            if (
+                i <=
+                pasajeros.adultos +
+                pasajeros.ninos
+            ) {
+
+                tipo =
+                    "Niño";
+
+            }
+
+            else {
+
+                tipo =
+                    "Infante";
+
+            }
+
+        }
+
+
+        const card =
+            document.createElement(
+                "div"
+            );
+
+
+        card.className =
+            "passenger-card";
+
+
+        card.innerHTML = `
+
+            <h4>
+                Pasajero ${i} - ${tipo}
+            </h4>
+
+            <div class="form-grid">
+
+                <div class="field">
+
+                    <label>
+                        Nombres
+                    </label>
+
+                    <input
+                        type="text"
+                        id="nombrePasajero${i}"
+                        placeholder="Nombres">
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>
+                        Apellidos
+                    </label>
+
+                    <input
+                        type="text"
+                        id="apellidoPasajero${i}"
+                        placeholder="Apellidos">
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>
+                        Documento
+                    </label>
+
+                    <input
+                        type="text"
+                        id="documentoPasajero${i}"
+                        placeholder="DNI / Pasaporte">
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>
+                        Nacionalidad
+                    </label>
+
+                    <input
+                        type="text"
+                        id="nacionalidadPasajero${i}"
+                        placeholder="Nacionalidad">
+
+                </div>
 
             </div>
 
         `;
 
-        return;
+
+        contenedor.appendChild(
+            card
+        );
 
     }
+
+}
+
+
+/* =========================================================
+   ASIENTOS
+   ========================================================= */
+
+function generarAsientos() {
+
+    const mapa =
+        document.getElementById(
+            "mapaAsientos"
+        );
 
 
     mapa.innerHTML = "";
@@ -938,7 +1493,6 @@ function generarAsientos() {
         fila++
     ) {
 
-
         const row =
             document.createElement(
                 "div"
@@ -949,110 +1503,64 @@ function generarAsientos() {
             "seat-row";
 
 
-        const numero =
-            document.createElement(
-                "div"
-            );
+        ["A", "B", "C", "D"]
+            .forEach(
+                letra => {
+
+                    const numero =
+                        `${fila}${letra}`;
 
 
-        numero.className =
-            "row-number";
-
-
-        numero.textContent =
-            fila;
-
-
-        row.appendChild(
-            numero
-        );
-
-
-        const letras = [
-            "A",
-            "B",
-            "PASILLO",
-            "C",
-            "D"
-        ];
-
-
-        letras.forEach(
-            function(
-                letra
-            ) {
-
-
-                if (
-                    letra === "PASILLO"
-                ) {
-
-                    const espacio =
+                    const button =
                         document.createElement(
-                            "div"
+                            "button"
                         );
 
+
+                    button.className =
+                        "seat-button";
+
+
+                    button.textContent =
+                        numero;
+
+
+                    if (
+                        asientosOcupados.includes(
+                            numero
+                        )
+                    ) {
+
+                        button.classList.add(
+                            "occupied"
+                        );
+
+                        button.disabled =
+                            true;
+
+                    }
+
+                    else {
+
+                        button.onclick =
+                            function () {
+
+                                seleccionarAsiento(
+                                    numero,
+                                    button
+                                );
+
+                            };
+
+                    }
+
+
                     row.appendChild(
-                        espacio
+                        button
                     );
-
-                    return;
 
                 }
-
-
-                const codigo =
-                    fila + letra;
-
-
-                const boton =
-                    document.createElement(
-                        "button"
-                    );
-
-
-                boton.className =
-                    "seat";
-
-
-                boton.textContent =
-                    codigo;
-
-
-                if (
-                    asientosOcupados.includes(
-                        codigo
-                    )
-                ) {
-
-                    boton.classList.add(
-                        "occupied"
-                    );
-
-                    boton.disabled =
-                        true;
-
-                } else {
-
-                    boton.onclick =
-                        function() {
-
-                            seleccionarAsiento(
-                                codigo,
-                                boton
-                            );
-
-                        };
-
-                }
-
-
-                row.appendChild(
-                    boton
-                );
-
-            }
-        );
+            );
 
 
         mapa.appendChild(
@@ -1061,75 +1569,70 @@ function generarAsientos() {
 
     }
 
+
+    actualizarContador();
+
 }
 
 
-/* =====================================================
+/* =========================================================
    SELECCIONAR ASIENTO
-===================================================== */
+   ========================================================= */
 
 function seleccionarAsiento(
-    codigo,
+    asiento,
     boton
 ) {
 
-
-    const cantidad =
-        obtenerCantidadPasajeros();
-
-
-    const seleccionados =
-        Object.keys(
-            asientosSeleccionados
-        );
+    const cantidadNecesaria =
+        obtenerTotalPasajeros();
 
 
     if (
-        seleccionados.includes(
-            codigo
+        asientosSeleccionados.includes(
+            asiento
         )
     ) {
 
-        delete asientosSeleccionados[
-            codigo
-        ];
+        asientosSeleccionados =
+            asientosSeleccionados.filter(
+                a =>
+                    a !== asiento
+            );
 
 
         boton.classList.remove(
             "selected"
         );
 
-
-        actualizarContador();
-
-        return;
-
     }
 
+    else {
 
-    if (
-        seleccionados.length >=
-        cantidad
-    ) {
+        if (
+            asientosSeleccionados.length >=
+            cantidadNecesaria
+        ) {
 
-        alert(
-            "Ya seleccionaste todos los asientos necesarios."
+            alert(
+                `Solo puede seleccionar ${cantidadNecesaria} asiento(s).`
+            );
+
+            return;
+
+        }
+
+
+        asientosSeleccionados.push(
+            asiento
         );
 
-        return;
+
+        boton.classList.add(
+            "selected"
+        );
 
     }
-
-
-    asientosSeleccionados[
-        codigo
-    ] =
-        seleccionados.length + 1;
-
-
-    boton.classList.add(
-        "selected"
-    );
 
 
     actualizarContador();
@@ -1137,400 +1640,230 @@ function seleccionarAsiento(
 }
 
 
-/* =====================================================
-   CONTADOR DE ASIENTOS
-===================================================== */
+/* =========================================================
+   CONTADOR ASIENTOS
+   ========================================================= */
 
 function actualizarContador() {
 
-
     const total =
-        obtenerCantidadPasajeros();
-
-
-    const seleccionados =
-        Object.keys(
-            asientosSeleccionados
-        ).length;
-
-
-    document.getElementById(
-        "contadorAsientos"
-    ).textContent =
-
-        `${seleccionados} / ${total}`;
-
-}
-
-
-/* =====================================================
-   CALCULAR TOTAL
-===================================================== */
-
-function calcularTotal() {
-
-
-    const cantidad =
-        obtenerCantidadPasajeros();
-
-
-    let precioVuelo =
-        vueloSeleccionado
-        ?
-        vueloSeleccionado.precio
-        :
-        0;
-
-
-    let multiplicador = 1;
-
-
-    const clase =
-        document.getElementById(
-            "clase"
-        ).value;
-
-
-    switch (
-        clase
-    ) {
-
-
-        case "Premium":
-
-            multiplicador =
-                1.25;
-
-            break;
-
-
-        case "Ejecutiva":
-
-            multiplicador =
-                1.65;
-
-            break;
-
-
-        case "Primera":
-
-            multiplicador =
-                2.30;
-
-            break;
-
-
-        default:
-
-            multiplicador =
-                1;
-
-    }
-
-
-    let subtotal =
-        precioVuelo *
-        cantidad *
-        multiplicador;
-
-
-    let servicios =
-        0;
+        obtenerTotalPasajeros();
 
 
     document
-        .querySelectorAll(
-            ".service input"
+        .getElementById(
+            "contadorAsientos"
         )
-        .forEach(
-            function(
-                checkbox
-            ) {
-
-
-                if (
-                    checkbox.checked
-                ) {
-
-                    servicios +=
-                        Number(
-                            checkbox.value
-                        );
-
-                }
-
-            }
-        );
-
-
-    const total =
-        subtotal +
-        servicios;
-
-
-    document.getElementById(
-        "precioTotal"
-    ).textContent =
-
-        `S/ ${total.toFixed(2)}`;
+        .textContent =
+        `Asientos seleccionados: ${asientosSeleccionados.length} de ${total}`;
 
 }
 
 
-/* =====================================================
-   VALIDAR PASAJEROS
-===================================================== */
+/* =========================================================
+   CAMBIO DE MONEDA
+   ========================================================= */
 
-function validarPasajeros() {
+function cambiarMoneda() {
 
-
-    const total =
-        obtenerCantidadPasajeros();
-
-
-    pasajerosRegistrados =
-        [];
+    monedaActual =
+        document.getElementById(
+            "moneda"
+        ).value;
 
 
-    for (
-        let i = 1;
-        i <= total;
-        i++
+    /*
+       Si ya hay vuelos mostrados,
+       los volvemos a generar
+       automáticamente con la nueva moneda.
+    */
+
+    if (
+        vueloSeleccionado
     ) {
 
+        generarVuelos(
 
-        const nombre =
-            document.getElementById(
-                `nombre${i}`
-            ).value.trim();
+            vueloSeleccionado.origen,
 
+            vueloSeleccionado.destino,
 
-        const apellido =
-            document.getElementById(
-                `apellido${i}`
-            ).value.trim();
+            precioBaseActual
 
-
-        const tipoDoc =
-            document.getElementById(
-                `tipoDoc${i}`
-            ).value;
-
-
-        const documento =
-            document.getElementById(
-                `documento${i}`
-            ).value.trim();
-
-
-        const nacimiento =
-            document.getElementById(
-                `nacimiento${i}`
-            ).value;
-
-
-        const nacionalidad =
-            document.getElementById(
-                `nacionalidad${i}`
-            ).value;
-
-
-        const genero =
-            document.getElementById(
-                `genero${i}`
-            ).value;
-
-
-        const email =
-            document.getElementById(
-                `email${i}`
-            ).value.trim();
-
-
-        if (
-            !nombre ||
-            !apellido ||
-            !tipoDoc ||
-            !documento ||
-            !nacimiento ||
-            !nacionalidad ||
-            !genero ||
-            !email
-        ) {
-
-
-            alert(
-                `Completa los datos del pasajero ${i}.`
-            );
-
-
-            return false;
-
-        }
-
-
-        pasajerosRegistrados.push({
-
-            nombre:
-                nombre,
-
-            apellido:
-                apellido,
-
-            tipoDocumento:
-                tipoDoc,
-
-            documento:
-                documento,
-
-            nacimiento:
-                nacimiento,
-
-            nacionalidad:
-                nacionalidad,
-
-            genero:
-                genero,
-
-            email:
-                email
-
-        });
+        );
 
     }
 
 
-    return true;
+    actualizarTotal();
 
 }
 
 
-/* =====================================================
+/* =========================================================
+   CONVERSIÓN DE PRECIOS
+   ========================================================= */
+
+function convertirPrecio(
+    precioUSD
+) {
+
+    let valor;
+
+
+    if (
+        monedaActual === "PEN"
+    ) {
+
+        valor =
+            precioUSD *
+            TASA_CAMBIO;
+
+
+        return (
+            "S/ " +
+            valor.toFixed(2)
+        );
+
+    }
+
+
+    else {
+
+        valor =
+            precioUSD;
+
+
+        return (
+            "$ " +
+            valor.toFixed(2)
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   PRECIO NUMÉRICO CONVERSIÓN
+   ========================================================= */
+
+function obtenerPrecioConvertido(
+    precioUSD
+) {
+
+    if (
+        monedaActual === "PEN"
+    ) {
+
+        return (
+            precioUSD *
+            TASA_CAMBIO
+        );
+
+    }
+
+
+    return precioUSD;
+
+}
+
+
+/* =========================================================
+   ACTUALIZAR TOTAL
+   ========================================================= */
+
+function actualizarTotal() {
+
+    if (
+        !vueloSeleccionado
+    ) {
+
+        return;
+
+    }
+
+
+    const cantidadPasajeros =
+        obtenerTotalPasajeros();
+
+
+    let total =
+        vueloSeleccionado.precio *
+        cantidadPasajeros;
+
+
+    const servicios =
+        document.querySelectorAll(
+            ".service input:checked"
+        );
+
+
+    servicios.forEach(
+        servicio => {
+
+            total +=
+                preciosServicios[
+                    servicio.value
+                ];
+
+        }
+    );
+
+
+    const totalConvertido =
+        obtenerPrecioConvertido(
+            total
+        );
+
+
+    const simbolo =
+        monedaActual === "PEN"
+            ? "S/ "
+            : "$ ";
+
+
+    document
+        .getElementById(
+            "precioTotal"
+        )
+        .textContent =
+        simbolo +
+        totalConvertido.toFixed(2);
+
+}
+
+
+/* =========================================================
    CONFIRMAR RESERVA
-===================================================== */
+   ========================================================= */
 
 function confirmarReserva() {
 
-
-    const origen =
-        document.getElementById(
-            "origen"
-        ).value;
-
-
-    const destino =
-        document.getElementById(
-            "destino"
-        ).value;
-
-
-    const fechaIda =
-        document.getElementById(
-            "fechaIda"
-        ).value;
-
-
-    const fechaRetorno =
-        document.getElementById(
-            "fechaRetorno"
-        ).value;
-
-
-    const contacto =
-        document.getElementById(
-            "contactoNombre"
-        ).value.trim();
-
-
-    const email =
-        document.getElementById(
-            "contactoEmail"
-        ).value.trim();
-
-
-    const telefono =
-        document.getElementById(
-            "contactoTelefono"
-        ).value.trim();
-
-
-    const total =
-        obtenerCantidadPasajeros();
-
-
-    /* VALIDACIONES */
-
-
     if (
-        !origen ||
-        !destino
+        !vueloSeleccionado
     ) {
 
         alert(
-            "Selecciona origen y destino."
+            "Debe seleccionar un vuelo."
         );
 
         return;
 
     }
+
+
+    const totalPasajeros =
+        obtenerTotalPasajeros();
 
 
     if (
-        origen === destino
+        asientosSeleccionados.length !==
+        totalPasajeros
     ) {
 
         alert(
-            "El origen y destino deben ser diferentes."
-        );
-
-        return;
-
-    }
-
-
-    if (!fechaIda) {
-
-        alert(
-            "Selecciona la fecha de ida."
-        );
-
-        return;
-
-    }
-
-
-    if (
-        tipoViaje !== "solo-ida" &&
-        !fechaRetorno
-    ) {
-
-        alert(
-            "Selecciona la fecha de retorno."
-        );
-
-        return;
-
-    }
-
-
-    if (
-        fechaRetorno &&
-        fechaRetorno <= fechaIda
-    ) {
-
-        alert(
-            "La fecha de retorno debe ser posterior a la fecha de ida."
-        );
-
-        return;
-
-    }
-
-
-    if (!total) {
-
-        alert(
-            "Selecciona al menos un pasajero."
+            `Debe seleccionar ${totalPasajeros} asiento(s).`
         );
 
         return;
@@ -1547,484 +1880,277 @@ function confirmarReserva() {
     }
 
 
+    const nombre =
+        document
+            .getElementById(
+                "contactoNombre"
+            )
+            .value.trim();
+
+
+    const email =
+        document
+            .getElementById(
+                "contactoEmail"
+            )
+            .value.trim();
+
+
     if (
-        !vueloSeleccionado
+        !nombre ||
+        !email
     ) {
 
         alert(
-            "Selecciona un vuelo."
+            "Complete los datos de contacto."
         );
 
         return;
 
     }
-
-
-    const cantidadAsientos =
-        Object.keys(
-            asientosSeleccionados
-        ).length;
-
-
-    if (
-        cantidadAsientos !== total
-    ) {
-
-        alert(
-            `Selecciona ${total} asiento(s).`
-        );
-
-        return;
-
-    }
-
-
-    if (
-        !contacto ||
-        !email ||
-        !telefono
-    ) {
-
-        alert(
-            "Completa los datos de contacto."
-        );
-
-        return;
-
-    }
-
-
-    /* CÓDIGO */
 
 
     codigoReservaActual =
-        "AST-" +
-        Math.floor(
-            100000 +
-            Math.random() *
-            900000
+        generarCodigoReserva();
+
+
+    mostrarResumen();
+
+
+    document
+        .getElementById(
+            "confirmacion"
+        )
+        .classList.remove(
+            "hidden"
         );
 
 
-    /* PRECIO */
+    document
+        .getElementById(
+            "codigoReserva"
+        )
+        .textContent =
+        `Código de reserva: ${codigoReservaActual}`;
 
 
-    const clase =
-        document.getElementById(
-            "clase"
-        ).value;
+    document
+        .getElementById(
+            "confirmacion"
+        )
+        .scrollIntoView({
+            behavior: "smooth"
+        });
+
+}
 
 
-    let multiplicador = 1;
+/* =========================================================
+   VALIDAR PASAJEROS
+   ========================================================= */
+
+function validarPasajeros() {
+
+    const total =
+        obtenerTotalPasajeros();
 
 
-    switch (
-        clase
+    for (
+        let i = 1;
+        i <= total;
+        i++
     ) {
 
-        case "Premium":
-
-            multiplicador =
-                1.25;
-
-            break;
-
-
-        case "Ejecutiva":
-
-            multiplicador =
-                1.65;
-
-            break;
+        const nombre =
+            document
+                .getElementById(
+                    `nombrePasajero${i}`
+                )
+                .value.trim();
 
 
-        case "Primera":
+        const apellido =
+            document
+                .getElementById(
+                    `apellidoPasajero${i}`
+                )
+                .value.trim();
 
-            multiplicador =
-                2.30;
 
-            break;
+        const documento =
+            document
+                .getElementById(
+                    `documentoPasajero${i}`
+                )
+                .value.trim();
+
+
+        if (
+            !nombre ||
+            !apellido ||
+            !documento
+        ) {
+
+            alert(
+                `Complete los datos del pasajero ${i}.`
+            );
+
+            return false;
+
+        }
 
     }
 
 
-    const subtotal =
-        vueloSeleccionado.precio *
-        total *
-        multiplicador;
+    return true;
+
+}
 
 
-    let servicios =
-        0;
+/* =========================================================
+   RESUMEN
+   ========================================================= */
 
+function mostrarResumen() {
 
-    document
-        .querySelectorAll(
-            ".service input"
-        )
-        .forEach(
-            function(
-                checkbox
-            ) {
-
-                if (
-                    checkbox.checked
-                ) {
-
-                    servicios +=
-                        Number(
-                            checkbox.value
-                        );
-
-                }
-
-            }
-        );
-
-
-    const totalFinal =
-        subtotal +
-        servicios;
-
-
-    /* PASAJEROS */
-
-
-    let pasajerosHTML =
-        "";
-
-
-    pasajerosRegistrados.forEach(
-        function(
-            pasajero,
-            indice
-        ) {
-
-
-            const asiento =
-                Object.keys(
-                    asientosSeleccionados
-                ).find(
-                    function(
-                        codigo
-                    ) {
-
-                        return (
-                            asientosSeleccionados[
-                                codigo
-                            ] ===
-                            indice + 1
-                        );
-
-                    }
-                );
-
-
-            pasajerosHTML += `
-
-                <div class="confirmed-passenger">
-
-                    <span>
-
-                        ${pasajero.nombre}
-                        ${pasajero.apellido}
-
-                    </span>
-
-                    <span class="confirmed-seat">
-
-                        ${asiento}
-
-                    </span>
-
-                </div>
-
-            `;
-
-        }
-    );
-
-
-    /* REPORTE */
-
-
-    const resultado =
+    const resumen =
         document.getElementById(
-            "resultado"
+            "resumenReserva"
         );
 
 
-    resultado.innerHTML = `
-
-        <div class="booking"
-             id="reporteReserva">
-
-
-            <div class="booking-header">
-
-                <div>
-
-                    <small>
-                        ANDES SKY TRAVEL
-                    </small>
-
-                    <h2>
-                        ✓ RESERVA CONFIRMADA
-                    </h2>
-
-                </div>
+    const total =
+        document
+            .getElementById(
+                "precioTotal"
+            )
+            .textContent;
 
 
-                <div class="booking-code">
+    resumen.innerHTML = `
 
-                    <span>
-                        CÓDIGO DE RESERVA
-                    </span>
+        <div class="summary-grid">
 
-                    <strong>
-                        ${codigoReservaActual}
-                    </strong>
 
-                </div>
+            <div class="summary-item">
+
+                <small>
+                    CÓDIGO DE RESERVA
+                </small>
+
+                <strong>
+                    ${codigoReservaActual}
+                </strong>
 
             </div>
 
 
-            <div class="booking-body">
+            <div class="summary-item">
 
+                <small>
+                    TIPO DE VUELO
+                </small>
 
-                <div class="route">
+                <strong>
+                    ${
+                        tipoVuelo === "nacional"
+                            ? "🇵🇪 Nacional"
+                            : "🌎 Internacional"
+                    }
+                </strong>
 
+            </div>
 
-                    <div class="airport">
 
-                        <small>
-                            ORIGEN
-                        </small>
+            <div class="summary-item">
 
-                        <h3>
-                            ${obtenerCodigoAeropuerto(
-                                origen
-                            )}
-                        </h3>
+                <small>
+                    VUELO
+                </small>
 
-                        <p>
-                            ${origen}
-                        </p>
+                <strong>
+                    ${vueloSeleccionado.numero}
+                </strong>
 
-                    </div>
+            </div>
 
 
-                    <div class="airport">
+            <div class="summary-item">
 
-                        <small>
-                            DESTINO
-                        </small>
+                <small>
+                    ORIGEN
+                </small>
 
-                        <h3>
-                            ${obtenerCodigoAeropuerto(
-                                destino
-                            )}
-                        </h3>
+                <strong>
+                    ${vueloSeleccionado.origen}
+                </strong>
 
-                        <p>
-                            ${destino}
-                        </p>
+            </div>
 
-                    </div>
 
-                </div>
+            <div class="summary-item">
 
+                <small>
+                    DESTINO
+                </small>
 
-                <div class="booking-details">
+                <strong>
+                    ${vueloSeleccionado.destino}
+                </strong>
 
+            </div>
 
-                    <div class="detail">
 
-                        <span>
-                            Fecha ida
-                        </span>
+            <div class="summary-item">
 
-                        <strong>
+                <small>
+                    HORARIO
+                </small>
 
-                            ${formatearFecha(
-                                fechaIda
-                            )}
+                <strong>
+                    ${vueloSeleccionado.salida}
+                    →
+                    ${vueloSeleccionado.llegada}
+                </strong>
 
-                        </strong>
+            </div>
 
-                    </div>
 
+            <div class="summary-item">
 
-                    <div class="detail">
+                <small>
+                    PASAJEROS
+                </small>
 
-                        <span>
-                            Retorno
-                        </span>
+                <strong>
+                    ${obtenerTotalPasajeros()}
+                </strong>
 
-                        <strong>
+            </div>
 
-                            ${
-                                fechaRetorno
-                                ?
-                                formatearFecha(
-                                    fechaRetorno
-                                )
-                                :
-                                "Solo ida"
-                            }
 
-                        </strong>
+            <div class="summary-item">
 
-                    </div>
+                <small>
+                    ASIENTOS
+                </small>
 
+                <strong>
+                    ${asientosSeleccionados.join(", ")}
+                </strong>
 
-                    <div class="detail">
+            </div>
 
-                        <span>
-                            Vuelo
-                        </span>
 
-                        <strong>
+            <div class="summary-item">
 
-                            ${vueloSeleccionado.codigo}
-
-                        </strong>
-
-                    </div>
-
-
-                    <div class="detail">
-
-                        <span>
-                            Clase
-                        </span>
-
-                        <strong>
-                            ${clase}
-                        </strong>
-
-                    </div>
-
-
-                    <div class="detail">
-
-                        <span>
-                            Pasajeros
-                        </span>
-
-                        <strong>
-                            ${total}
-                        </strong>
-
-                    </div>
-
-                </div>
-
-
-                <div class="passenger-list">
-
-                    <h3>
-                        Pasajeros y asientos
-                    </h3>
-
-                    ${pasajerosHTML}
-
-                </div>
-
-
-                <div class="booking-details">
-
-
-                    <div class="detail">
-
-                        <span>
-                            Contacto
-                        </span>
-
-                        <strong>
-                            ${contacto}
-                        </strong>
-
-                    </div>
-
-
-                    <div class="detail">
-
-                        <span>
-                            Correo
-                        </span>
-
-                        <strong>
-                            ${email}
-                        </strong>
-
-                    </div>
-
-
-                    <div class="detail">
-
-                        <span>
-                            Teléfono
-                        </span>
-
-                        <strong>
-                            ${telefono}
-                        </strong>
-
-                    </div>
-
-
-                    <div class="detail">
-
-                        <span>
-                            Servicios
-                        </span>
-
-                        <strong>
-                            S/ ${servicios.toFixed(2)}
-                        </strong>
-
-                    </div>
-
-
-                    <div class="detail">
-
-                        <span>
-                            TOTAL
-                        </span>
-
-                        <strong>
-                            S/ ${totalFinal.toFixed(2)}
-                        </strong>
-
-                    </div>
-
-                </div>
-
-
-                <div class="report-buttons">
-
-
-                    <button
-                        class="report-btn primary"
-                        onclick="imprimirReporte()">
-
-                        🖨️ Imprimir / Guardar PDF
-
-                    </button>
-
-
-                    <button
-                        class="report-btn"
-                        onclick="guardarReserva()">
-
-                        💾 Guardar reserva
-
-                    </button>
-
-                </div>
-
+                <small>
+                    TOTAL
+                </small>
+
+                <strong>
+                    ${total}
+                </strong>
 
             </div>
 
@@ -2033,76 +2159,40 @@ function confirmarReserva() {
     `;
 
 
-    /* GUARDAR INFORMACIÓN */
-
-
-    const reserva = {
-
-        codigo:
-            codigoReservaActual,
-
-        origen:
-            origen,
-
-        destino:
-            destino,
-
-        fechaIda:
-            fechaIda,
-
-        fechaRetorno:
-            fechaRetorno,
-
-        vuelo:
-            vueloSeleccionado.codigo,
-
-        clase:
-            clase,
-
-        pasajeros:
-            pasajerosRegistrados,
-
-        asientos:
-            asientosSeleccionados,
-
-        contacto:
-            contacto,
-
-        email:
-            email,
-
-        telefono:
-            telefono,
-
-        total:
-            totalFinal
-
-    };
-
-
-    localStorage.setItem(
-        "ultimaReserva",
-        JSON.stringify(
-            reserva
-        )
-    );
-
-
     document
         .getElementById(
-            "confirmacion"
+            "seccionResumen"
         )
-        .scrollIntoView({
-            behavior:
-                "smooth"
-        });
+        .classList.remove(
+            "hidden"
+        );
 
 }
 
 
-/* =====================================================
-   IMPRIMIR REPORTE
-===================================================== */
+/* =========================================================
+   CÓDIGO DE RESERVA
+   ========================================================= */
+
+function generarCodigoReserva() {
+
+    const numero =
+        Math.floor(
+            1000 +
+            Math.random() * 9000
+        );
+
+
+    return (
+        `AST-2026-${numero}`
+    );
+
+}
+
+
+/* =========================================================
+   IMPRIMIR
+   ========================================================= */
 
 function imprimirReporte() {
 
@@ -2111,22 +2201,284 @@ function imprimirReporte() {
 }
 
 
-/* =====================================================
+/* =========================================================
    GUARDAR RESERVA
-===================================================== */
+   ========================================================= */
 
 function guardarReserva() {
 
+    const reserva = {
+
+        codigo:
+            codigoReservaActual,
+
+        tipoVuelo:
+            tipoVuelo,
+
+        tipoViaje:
+            tipoViaje,
+
+        vuelo:
+            vueloSeleccionado,
+
+        pasajeros:
+            pasajeros,
+
+        asientos:
+            asientosSeleccionados,
+
+        moneda:
+            monedaActual,
+
+        total:
+            document
+                .getElementById(
+                    "precioTotal"
+                )
+                .textContent,
+
+        fecha:
+            new Date().toLocaleString()
+
+    };
+
+
+    localStorage.setItem(
+
+        "ultimaReservaAndesSky",
+
+        JSON.stringify(
+            reserva
+        )
+
+    );
+
+
+    alert(
+        "La reserva ha sido guardada en este navegador."
+    );
+
+}
+
+
+/* =========================================================
+   ADMINISTRAR RESERVA
+   ========================================================= */
+
+function buscarReserva() {
+
+    const codigo =
+        document
+            .getElementById(
+                "buscarCodigo"
+            )
+            .value
+            .trim()
+            .toUpperCase();
+
+
     const reserva =
         localStorage.getItem(
-            "ultimaReserva"
+            "ultimaReservaAndesSky"
         );
 
 
-    if (!reserva) {
+    const resultado =
+        document.getElementById(
+            "resultadoBusqueda"
+        );
+
+
+    if (
+        !reserva
+    ) {
+
+        resultado.innerHTML = `
+
+            <strong>
+                No existen reservas guardadas
+                en este navegador.
+            </strong>
+
+        `;
+
+        return;
+
+    }
+
+
+    const datos =
+        JSON.parse(
+            reserva
+        );
+
+
+    if (
+        codigo &&
+        codigo !== datos.codigo
+    ) {
+
+        resultado.innerHTML = `
+
+            <strong>
+                No se encontró la reserva.
+            </strong>
+
+        `;
+
+        return;
+
+    }
+
+
+    resultado.innerHTML = `
+
+        <h3>
+            Reserva encontrada
+        </h3>
+
+        <p>
+            <strong>
+                Código:
+            </strong>
+
+            ${datos.codigo}
+        </p>
+
+        <p>
+            <strong>
+                Tipo:
+            </strong>
+
+            ${
+                datos.tipoVuelo === "nacional"
+                    ? "Nacional"
+                    : "Internacional"
+            }
+        </p>
+
+        <p>
+            <strong>
+                Vuelo:
+            </strong>
+
+            ${datos.vuelo.numero}
+        </p>
+
+        <p>
+            <strong>
+                Ruta:
+            </strong>
+
+            ${datos.vuelo.origen}
+            →
+            ${datos.vuelo.destino}
+        </p>
+
+        <p>
+            <strong>
+                Asientos:
+            </strong>
+
+            ${datos.asientos.join(", ")}
+        </p>
+
+        <p>
+            <strong>
+                Total:
+            </strong>
+
+            ${datos.total}
+        </p>
+
+    `;
+
+}
+
+
+/* =========================================================
+   ESTADO DEL VUELO
+   ========================================================= */
+
+function cargarEstadoAeropuertos() {
+
+    const origen =
+        document.getElementById(
+            "estadoOrigen"
+        );
+
+
+    const destino =
+        document.getElementById(
+            "estadoDestino"
+        );
+
+
+    aeropuertosPeru.forEach(
+        aeropuerto => {
+
+            agregarOpcion(
+
+                origen,
+
+                aeropuerto.codigo,
+
+                `${aeropuerto.ciudad} (${aeropuerto.codigo})`
+
+            );
+
+
+            agregarOpcion(
+
+                destino,
+
+                aeropuerto.codigo,
+
+                `${aeropuerto.ciudad} (${aeropuerto.codigo})`
+
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   CONSULTAR ESTADO
+   ========================================================= */
+
+function consultarEstado() {
+
+    const origen =
+        document
+            .getElementById(
+                "estadoOrigen"
+            )
+            .value;
+
+
+    const destino =
+        document
+            .getElementById(
+                "estadoDestino"
+            )
+            .value;
+
+
+    const resultado =
+        document
+            .getElementById(
+                "resultadoEstado"
+            );
+
+
+    if (
+        origen === destino
+    ) {
 
         alert(
-            "No existe una reserva para guardar."
+            "Seleccione ciudades diferentes."
         );
 
         return;
@@ -2134,103 +2486,118 @@ function guardarReserva() {
     }
 
 
-    alert(
-        "✓ Reserva guardada correctamente en el navegador."
-    );
+    resultado.innerHTML = `
+
+        <div class="status-card">
+
+            <h2>
+                AS 245
+            </h2>
+
+            <p>
+                ${origen}
+                →
+                ${destino}
+            </p>
+
+            <p class="status-ok">
+                ● A TIEMPO
+            </p>
+
+            <p>
+                Salida estimada:
+                10:15
+            </p>
+
+            <p>
+                Llegada estimada:
+                11:45
+            </p>
+
+        </div>
+
+    `;
 
 }
 
 
-/* =====================================================
-   CÓDIGO AEROPUERTO
-===================================================== */
+/* =========================================================
+   BÚSQUEDA ESTADO
+   ========================================================= */
 
-function obtenerCodigoAeropuerto(
-    ciudad
+function cambiarBusquedaEstado(
+    tipo,
+    boton
 ) {
 
-    return (
-        aeropuertos[
-            ciudad
-        ] || "---"
+    document
+        .querySelectorAll(
+            ".search-option"
+        )
+        .forEach(
+            b =>
+                b.classList.remove(
+                    "active"
+                )
+        );
+
+
+    boton.classList.add(
+        "active"
     );
 
-}
 
+    if (
+        tipo === "vuelo"
+    ) {
 
-/* =====================================================
-   FORMATEAR FECHA
-===================================================== */
-
-function formatearFecha(
-    fecha
-) {
-
-    if (!fecha) {
-
-        return "---";
+        alert(
+            "Modo de búsqueda por número de vuelo activado."
+        );
 
     }
 
-
-    const partes =
-        fecha.split("-");
-
-
-    return (
-
-        partes[2] +
-        "/" +
-        partes[1] +
-        "/" +
-        partes[0]
-
-    );
-
 }
 
 
-/* =====================================================
-   FECHA MÍNIMA
-===================================================== */
+/* =========================================================
+   FECHAS
+   ========================================================= */
 
-document.addEventListener(
-    "DOMContentLoaded",
-    function() {
+function establecerFechaMinima() {
 
-
-        const hoy =
-            new Date()
+    const hoy =
+        new Date()
             .toISOString()
             .split("T")[0];
 
 
-        document.getElementById(
-            "fechaIda"
-        ).min =
-            hoy;
+    document
+        .getElementById(
+            "fechaSalida"
+        )
+        .min =
+        hoy;
 
 
-        document.getElementById(
+    document
+        .getElementById(
             "fechaRetorno"
-        ).min =
-            hoy;
+        )
+        .min =
+        hoy;
 
 
-        document.getElementById(
-            "fechaIda"
-        ).addEventListener(
-            "change",
-            function() {
+    document
+        .getElementById(
+            "estadoFecha"
+        )
+        .min =
+        hoy;
 
-                document.getElementById(
-                    "fechaRetorno"
-                ).min =
-                    this.value;
-
-            }
-        );
+}
 
 
-    }
-);
+/* =========================================================
+   FIN
+   ========================================================= */
