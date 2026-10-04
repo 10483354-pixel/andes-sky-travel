@@ -1,11 +1,12 @@
 /* =========================================================
    ANDES SKY TRAVEL
+   SISTEMA DE RESERVAS DE VUELOS
    SCRIPT.JS
    ========================================================= */
 
 
 /* =========================================================
-   VARIABLES
+   VARIABLES PRINCIPALES
    ========================================================= */
 
 let tipoVuelo = "nacional";
@@ -21,19 +22,14 @@ let pasajeros = {
     infantes: 0
 };
 
-let codigoReservaActual = "";
 let precioBaseActual = 0;
-
-
-/* =========================================================
-   CONFIGURACIÓN
-   ========================================================= */
+let codigoReservaActual = "";
 
 const TASA_CAMBIO = 3.50;
 
 
 /* =========================================================
-   🇵🇪 AEROPUERTOS NACIONALES
+   AEROPUERTOS NACIONALES
    ========================================================= */
 
 const aeropuertosPeru = [
@@ -102,7 +98,7 @@ const aeropuertosPeru = [
 
 
 /* =========================================================
-   🌎 AEROPUERTOS INTERNACIONALES
+   AEROPUERTOS INTERNACIONALES
    ========================================================= */
 
 const aeropuertosInternacionales = [
@@ -237,8 +233,7 @@ const aeropuertosInternacionales = [
 
 
 /* =========================================================
-   💰 PRECIOS NACIONALES
-   PRECIO BASE EN DÓLARES
+   PRECIOS BASE NACIONALES
    ========================================================= */
 
 const preciosNacionales = {
@@ -267,13 +262,12 @@ const preciosNacionales = {
 
 
 /* =========================================================
-   🌎 PRECIOS INTERNACIONALES
-   PRECIO BASE EN DÓLARES
+   PRECIOS INTERNACIONALES
    ========================================================= */
 
 const preciosInternacionales = {
 
-    "LIM-SCL": 280,
+    "LIM-SCL": 290,
     "LIM-EZE": 350,
     "LIM-BOG": 250,
     "LIM-CTG": 290,
@@ -293,15 +287,23 @@ const preciosInternacionales = {
     "LIM-NRT": 1250,
     "LIM-DXB": 1100,
 
-    "SCL-LIM": 280,
+    "SCL-LIM": 290,
     "EZE-LIM": 350,
     "BOG-LIM": 250,
+    "CTG-LIM": 290,
+    "GRU-LIM": 320,
+    "GIG-LIM": 340,
+    "MEX-LIM": 390,
     "MIA-LIM": 420,
     "JFK-LIM": 650,
+    "LAX-LIM": 690,
     "MAD-LIM": 720,
+    "BCN-LIM": 760,
     "CDG-LIM": 850,
     "FCO-LIM": 890,
     "LHR-LIM": 930,
+    "AMS-LIM": 950,
+    "FRA-LIM": 970,
     "NRT-LIM": 1250,
     "DXB-LIM": 1100
 
@@ -362,80 +364,10 @@ document.addEventListener(
 
         establecerFechaMinima();
 
+        cambiarTipoViaje();
+
     }
 );
-
-
-/* =========================================================
-   PESTAÑAS
-   ========================================================= */
-
-function mostrarPanel(panel, boton) {
-
-    document
-        .querySelectorAll(".panel")
-        .forEach(function (p) {
-
-            p.classList.remove(
-                "active-panel"
-            );
-
-        });
-
-
-    document
-        .querySelectorAll(".tab")
-        .forEach(function (t) {
-
-            t.classList.remove(
-                "active"
-            );
-
-        });
-
-
-    if (panel === "reservar") {
-
-        document
-            .getElementById(
-                "panelReservar"
-            )
-            .classList.add(
-                "active-panel"
-            );
-
-    }
-
-    else if (panel === "administrar") {
-
-        document
-            .getElementById(
-                "panelAdministrar"
-            )
-            .classList.add(
-                "active-panel"
-            );
-
-    }
-
-    else {
-
-        document
-            .getElementById(
-                "panelEstado"
-            )
-            .classList.add(
-                "active-panel"
-            );
-
-    }
-
-
-    boton.classList.add(
-        "active"
-    );
-
-}
 
 
 /* =========================================================
@@ -447,38 +379,61 @@ function seleccionarTipoVuelo(tipo) {
     tipoVuelo = tipo;
 
 
-    document
-        .getElementById("btnNacional")
-        .classList.remove("selected");
+    const nacional =
+        document.getElementById(
+            "btnNacional"
+        );
+
+    const internacional =
+        document.getElementById(
+            "btnInternacional"
+        );
 
 
-    document
-        .getElementById("btnInternacional")
-        .classList.remove("selected");
+    if (nacional) {
+
+        nacional.classList.remove(
+            "selected"
+        );
+
+    }
 
 
-    if (tipo === "nacional") {
+    if (internacional) {
 
-        document
-            .getElementById("btnNacional")
-            .classList.add("selected");
+        internacional.classList.remove(
+            "selected"
+        );
+
+    }
+
+
+    if (
+        tipo === "nacional"
+    ) {
+
+        if (nacional) {
+
+            nacional.classList.add(
+                "selected"
+            );
+
+        }
 
     }
 
     else {
 
-        document
-            .getElementById("btnInternacional")
-            .classList.add("selected");
+        if (internacional) {
+
+            internacional.classList.add(
+                "selected"
+            );
+
+        }
 
     }
 
-
-    /*
-       Al cambiar entre Nacional e Internacional,
-       se actualizan automáticamente los
-       catálogos de origen y destino.
-    */
 
     cargarOrigenes();
 
@@ -486,13 +441,20 @@ function seleccionarTipoVuelo(tipo) {
 
 
 /* =========================================================
-   CARGAR ORIGEN
+   CARGAR ORÍGENES
    ========================================================= */
 
 function cargarOrigenes() {
 
     const origen =
-        document.getElementById("origen");
+        document.getElementById(
+            "origen"
+        );
+
+
+    if (!origen) {
+        return;
+    }
 
 
     origen.innerHTML = "";
@@ -501,105 +463,9 @@ function cargarOrigenes() {
     let lista;
 
 
-    if (tipoVuelo === "nacional") {
-
-        /*
-           SOLO CIUDADES DEL PERÚ
-        */
-
-        lista =
-            aeropuertosPeru;
-
-    }
-
-    else {
-
-        /*
-           CATÁLOGO INTERNACIONAL
-        */
-
-        lista =
-            aeropuertosInternacionales;
-
-    }
-
-
-    lista.forEach(function (aeropuerto) {
-
-        const option =
-            document.createElement(
-                "option"
-            );
-
-
-        option.value =
-            aeropuerto.codigo;
-
-
-        if (tipoVuelo === "nacional") {
-
-            option.textContent =
-                `${aeropuerto.ciudad} (${aeropuerto.codigo})`;
-
-        }
-
-        else {
-
-            option.textContent =
-                `${aeropuerto.ciudad} - ${aeropuerto.pais} (${aeropuerto.codigo})`;
-
-        }
-
-
-        origen.appendChild(
-            option
-        );
-
-    });
-
-
-    /*
-       Para vuelos internacionales
-       iniciamos en Lima.
-    */
-
-    if (tipoVuelo === "internacional") {
-
-        origen.value = "LIM";
-
-    }
-
-
-    actualizarDestino();
-
-}
-
-
-/* =========================================================
-   CARGAR DESTINO
-   ========================================================= */
-
-function actualizarDestino() {
-
-    const origen =
-        document.getElementById(
-            "origen"
-        ).value;
-
-
-    const destino =
-        document.getElementById(
-            "destino"
-        );
-
-
-    destino.innerHTML = "";
-
-
-    let lista;
-
-
-    if (tipoVuelo === "nacional") {
+    if (
+        tipoVuelo === "nacional"
+    ) {
 
         lista =
             aeropuertosPeru;
@@ -614,18 +480,8 @@ function actualizarDestino() {
     }
 
 
-    lista
-        .filter(function (aeropuerto) {
-
-            /*
-               El destino nunca puede ser
-               igual al origen.
-            */
-
-            return aeropuerto.codigo !== origen;
-
-        })
-        .forEach(function (aeropuerto) {
+    lista.forEach(
+        function (aeropuerto) {
 
             const option =
                 document.createElement(
@@ -637,7 +493,9 @@ function actualizarDestino() {
                 aeropuerto.codigo;
 
 
-            if (tipoVuelo === "nacional") {
+            if (
+                tipoVuelo === "nacional"
+            ) {
 
                 option.textContent =
                     `${aeropuerto.ciudad} (${aeropuerto.codigo})`;
@@ -652,14 +510,160 @@ function actualizarDestino() {
             }
 
 
-            destino.appendChild(
+            origen.appendChild(
                 option
             );
 
-        });
+        }
+    );
+
+
+    /*
+       Para internacional,
+       Lima será el origen inicial.
+    */
+
+    if (
+        tipoVuelo === "internacional" &&
+        lista.some(
+            function (a) {
+                return a.codigo === "LIM";
+            }
+        )
+    ) {
+
+        origen.value =
+            "LIM";
+
+    }
+
+
+    actualizarDestino();
+
+}
+
+
+/* =========================================================
+   CARGAR DESTINOS
+   ========================================================= */
+
+function actualizarDestino() {
+
+    const origen =
+        document.getElementById(
+            "origen"
+        );
+
+
+    const destino =
+        document.getElementById(
+            "destino"
+        );
+
+
+    if (
+        !origen ||
+        !destino
+    ) {
+
+        return;
+
+    }
+
+
+    destino.innerHTML = "";
+
+
+    let lista;
+
+
+    if (
+        tipoVuelo === "nacional"
+    ) {
+
+        lista =
+            aeropuertosPeru;
+
+    }
+
+    else {
+
+        lista =
+            aeropuertosInternacionales;
+
+    }
+
+
+    /*
+       IMPORTANTE:
+
+       Se excluye solamente el mismo
+       aeropuerto seleccionado como origen.
+
+       Todo lo demás queda disponible.
+    */
+
+    lista
+        .filter(
+            function (aeropuerto) {
+
+                return (
+                    aeropuerto.codigo !==
+                    origen.value
+                );
+
+            }
+        )
+        .forEach(
+            function (aeropuerto) {
+
+                const option =
+                    document.createElement(
+                        "option"
+                    );
+
+
+                option.value =
+                    aeropuerto.codigo;
+
+
+                if (
+                    tipoVuelo === "nacional"
+                ) {
+
+                    option.textContent =
+                        `${aeropuerto.ciudad} (${aeropuerto.codigo})`;
+
+                }
+
+                else {
+
+                    option.textContent =
+                        `${aeropuerto.ciudad} - ${aeropuerto.pais} (${aeropuerto.codigo})`;
+
+                }
+
+
+                destino.appendChild(
+                    option
+                );
+
+            }
+        );
 
 
     actualizarTextoRuta();
+
+}
+
+
+/* =========================================================
+   CAMBIO DE ORIGEN
+   ========================================================= */
+
+function cambioOrigen() {
+
+    actualizarDestino();
 
 }
 
@@ -675,17 +679,26 @@ function actualizarTextoRuta() {
             "origen"
         );
 
-
     const destino =
         document.getElementById(
             "destino"
         );
 
-
     const info =
         document.getElementById(
             "infoRuta"
         );
+
+
+    if (
+        !origen ||
+        !destino ||
+        !info
+    ) {
+
+        return;
+
+    }
 
 
     if (
@@ -701,10 +714,12 @@ function actualizarTextoRuta() {
     }
 
 
-    if (tipoVuelo === "nacional") {
+    if (
+        tipoVuelo === "nacional"
+    ) {
 
         info.textContent =
-            `${origen.value} → ${destino.value} | Vuelo nacional dentro del Perú`;
+            `${origen.value} → ${destino.value} | Vuelo nacional`;
 
     }
 
@@ -751,25 +766,46 @@ function cambiarTipoViaje() {
         );
 
 
-    if (tipoViaje === "solo-ida") {
+    if (
+        tipoViaje === "solo-ida"
+    ) {
 
-        campoRetorno.style.opacity =
-            "0.45";
+        if (campoRetorno) {
 
-        fechaRetorno.disabled =
-            true;
+            campoRetorno.style.opacity =
+                "0.45";
 
-        fechaRetorno.value = "";
+        }
+
+
+        if (fechaRetorno) {
+
+            fechaRetorno.disabled =
+                true;
+
+            fechaRetorno.value =
+                "";
+
+        }
 
     }
 
     else {
 
-        campoRetorno.style.opacity =
-            "1";
+        if (campoRetorno) {
 
-        fechaRetorno.disabled =
-            false;
+            campoRetorno.style.opacity =
+                "1";
+
+        }
+
+
+        if (fechaRetorno) {
+
+            fechaRetorno.disabled =
+                false;
+
+        }
 
     }
 
@@ -777,7 +813,7 @@ function cambiarTipoViaje() {
 
 
 /* =========================================================
-   CONTADORES DE PASAJEROS
+   PASAJEROS
    ========================================================= */
 
 function cambiarPasajeros(
@@ -785,7 +821,8 @@ function cambiarPasajeros(
     cantidad
 ) {
 
-    pasajeros[tipo] += cantidad;
+    pasajeros[tipo] +=
+        cantidad;
 
 
     if (
@@ -807,19 +844,23 @@ function cambiarPasajeros(
     }
 
 
-    document
-        .getElementById(tipo)
-        .textContent =
-        pasajeros[tipo];
+    const elemento =
+        document.getElementById(
+            tipo
+        );
 
 
-    /*
-       Si ya se seleccionó un vuelo,
-       regeneramos el formulario
-       de pasajeros.
-    */
+    if (elemento) {
 
-    if (vueloSeleccionado) {
+        elemento.textContent =
+            pasajeros[tipo];
+
+    }
+
+
+    if (
+        vueloSeleccionado
+    ) {
 
         generarFormularioPasajeros();
 
@@ -839,9 +880,13 @@ function cambiarPasajeros(
 function obtenerTotalPasajeros() {
 
     return (
+
         pasajeros.adultos +
+
         pasajeros.ninos +
+
         pasajeros.infantes
+
     );
 
 }
@@ -849,6 +894,7 @@ function obtenerTotalPasajeros() {
 
 /* =========================================================
    BUSCAR VUELOS
+   TODAS LAS RUTAS ESTÁN DISPONIBLES
    ========================================================= */
 
 function buscarVuelos() {
@@ -877,6 +923,10 @@ function buscarVuelos() {
         ).value;
 
 
+    /*
+       VALIDAR FECHA
+    */
+
     if (!fechaSalida) {
 
         alert(
@@ -887,6 +937,10 @@ function buscarVuelos() {
 
     }
 
+
+    /*
+       VALIDAR RETORNO
+    */
 
     if (
         tipoViaje === "ida-vuelta" &&
@@ -902,6 +956,10 @@ function buscarVuelos() {
     }
 
 
+    /*
+       VALIDAR FECHAS
+    */
+
     if (
         tipoViaje === "ida-vuelta" &&
         fechaRetorno < fechaSalida
@@ -916,6 +974,39 @@ function buscarVuelos() {
     }
 
 
+    /*
+       VALIDAR RUTA
+    */
+
+    if (
+        origen === destino
+    ) {
+
+        alert(
+            "El origen y el destino deben ser diferentes."
+        );
+
+        return;
+
+    }
+
+
+    /*
+       =====================================================
+       PRECIO BASE
+       =====================================================
+
+       Si la ruta existe en nuestra tabla,
+       usamos su precio.
+
+       Si NO existe,
+       generamos automáticamente un
+       precio según el tipo de vuelo.
+
+       De esta manera TODAS las rutas
+       estarán disponibles.
+    */
+
     const ruta =
         `${origen}-${destino}`;
 
@@ -923,36 +1014,51 @@ function buscarVuelos() {
     let precio;
 
 
-    /*
-       PRECIO NACIONAL
-    */
-
-    if (tipoVuelo === "nacional") {
+    if (
+        tipoVuelo === "nacional"
+    ) {
 
         precio =
             preciosNacionales[ruta];
 
-    }
 
-    /*
-       PRECIO INTERNACIONAL
-    */
+        /*
+           Si no existe la ruta,
+           se genera un precio base.
+        */
+
+        if (!precio) {
+
+            precio =
+                generarPrecioNacional(
+                    origen,
+                    destino
+                );
+
+        }
+
+    }
 
     else {
 
         precio =
             preciosInternacionales[ruta];
 
-    }
 
+        /*
+           Si no existe la ruta,
+           se genera automáticamente.
+        */
 
-    if (!precio) {
+        if (!precio) {
 
-        alert(
-            "La ruta seleccionada no se encuentra disponible actualmente."
-        );
+            precio =
+                generarPrecioInternacional(
+                    origen,
+                    destino
+                );
 
-        return;
+        }
 
     }
 
@@ -961,6 +1067,10 @@ function buscarVuelos() {
         precio;
 
 
+    /*
+       GENERAR VUELOS
+    */
+
     generarVuelos(
         origen,
         destino,
@@ -968,22 +1078,302 @@ function buscarVuelos() {
     );
 
 
-    document
-        .getElementById(
+    /*
+       MOSTRAR RESULTADOS
+    */
+
+    const resultados =
+        document.getElementById(
             "resultados"
-        )
-        .classList.remove(
+        );
+
+
+    if (resultados) {
+
+        resultados.classList.remove(
             "hidden"
         );
 
 
-    document
-        .getElementById(
-            "resultados"
-        )
-        .scrollIntoView({
+        resultados.scrollIntoView({
             behavior: "smooth"
         });
+
+    }
+
+}
+
+
+/* =========================================================
+   GENERAR PRECIO NACIONAL
+   ========================================================= */
+
+function generarPrecioNacional(
+    origen,
+    destino
+) {
+
+    /*
+       Precio base académico.
+       Se genera según los códigos
+       para que todas las rutas
+       tengan un precio diferente.
+    */
+
+    const numeroOrigen =
+        obtenerNumeroCodigo(
+            origen
+        );
+
+
+    const numeroDestino =
+        obtenerNumeroCodigo(
+            destino
+        );
+
+
+    const diferencia =
+        Math.abs(
+            numeroOrigen -
+            numeroDestino
+        );
+
+
+    return (
+        80 +
+        (diferencia * 3)
+    );
+
+}
+
+
+/* =========================================================
+   GENERAR PRECIO INTERNACIONAL
+   ========================================================= */
+
+function generarPrecioInternacional(
+    origen,
+    destino
+) {
+
+    const origenInfo =
+        buscarAeropuerto(
+            origen
+        );
+
+
+    const destinoInfo =
+        buscarAeropuerto(
+            destino
+        );
+
+
+    /*
+       Distancia aproximada académica
+       según regiones.
+    */
+
+    let precio = 290;
+
+
+    if (
+        destinoInfo
+    ) {
+
+        const pais =
+            destinoInfo.pais;
+
+
+        if (
+            pais === "Chile"
+        ) {
+
+            precio = 290;
+
+        }
+
+        else if (
+            pais === "Argentina"
+        ) {
+
+            precio = 350;
+
+        }
+
+        else if (
+            pais === "Colombia"
+        ) {
+
+            precio = 250;
+
+        }
+
+        else if (
+            pais === "Brasil"
+        ) {
+
+            precio = 320;
+
+        }
+
+        else if (
+            pais === "México"
+        ) {
+
+            precio = 390;
+
+        }
+
+        else if (
+            pais === "Estados Unidos"
+        ) {
+
+            precio = 450;
+
+        }
+
+        else if (
+            pais === "España"
+        ) {
+
+            precio = 720;
+
+        }
+
+        else if (
+            pais === "Francia"
+        ) {
+
+            precio = 850;
+
+        }
+
+        else if (
+            pais === "Italia"
+        ) {
+
+            precio = 890;
+
+        }
+
+        else if (
+            pais === "Reino Unido"
+        ) {
+
+            precio = 930;
+
+        }
+
+        else if (
+            pais === "Países Bajos"
+        ) {
+
+            precio = 950;
+
+        }
+
+        else if (
+            pais === "Alemania"
+        ) {
+
+            precio = 970;
+
+        }
+
+        else if (
+            pais === "Japón"
+        ) {
+
+            precio = 1250;
+
+        }
+
+        else if (
+            pais === "Emiratos Árabes Unidos"
+        ) {
+
+            precio = 1100;
+
+        }
+
+    }
+
+
+    /*
+       Si el origen también es internacional,
+       agregamos una pequeña variación.
+    */
+
+    if (
+        origenInfo &&
+        origenInfo.pais !== "Perú"
+    ) {
+
+        precio += 100;
+
+    }
+
+
+    return precio;
+
+}
+
+
+/* =========================================================
+   OBTENER NÚMERO DE CÓDIGO
+   ========================================================= */
+
+function obtenerNumeroCodigo(
+    codigo
+) {
+
+    let total = 0;
+
+
+    for (
+        let i = 0;
+        i < codigo.length;
+        i++
+    ) {
+
+        total +=
+            codigo.charCodeAt(i);
+
+    }
+
+
+    return total;
+
+}
+
+
+/* =========================================================
+   BUSCAR AEROPUERTO
+   ========================================================= */
+
+function buscarAeropuerto(
+    codigo
+) {
+
+    const todos = [
+
+        ...aeropuertosPeru,
+
+        ...aeropuertosInternacionales
+
+    ];
+
+
+    return todos.find(
+        function (aeropuerto) {
+
+            return (
+                aeropuerto.codigo ===
+                codigo
+            );
+
+        }
+    );
 
 }
 
@@ -1002,6 +1392,11 @@ function generarVuelos(
         document.getElementById(
             "listaVuelos"
         );
+
+
+    if (!lista) {
+        return;
+    }
 
 
     lista.innerHTML = "";
@@ -1040,10 +1435,6 @@ function generarVuelos(
                 precioBase +
                 (index * 15);
 
-
-            /*
-               OBJETO DEL VUELO
-            */
 
             const vuelo = {
 
@@ -1089,7 +1480,7 @@ function generarVuelos(
 
 
             /*
-               INFORMACIÓN
+               AEROLÍNEA
             */
 
             const informacion =
@@ -1220,7 +1611,7 @@ function generarVuelos(
 
 
             /*
-               BOTÓN
+               BOTÓN SELECCIONAR
             */
 
             const boton =
@@ -1238,16 +1629,7 @@ function generarVuelos(
 
 
             /*
-               =================================================
-               CORRECCIÓN IMPORTANTE
-               =================================================
-
-               El evento se asigna directamente
-               al botón.
-
-               NO utilizamos onclick dentro
-               de innerHTML.
-               =================================================
+               EVENTO CLICK
             */
 
             boton.addEventListener(
@@ -1285,25 +1667,18 @@ function generarVuelos(
                 informacion
             );
 
-
             card.appendChild(
                 ruta
             );
-
 
             card.appendChild(
                 duracion
             );
 
-
             card.appendChild(
                 precioDiv
             );
 
-
-            /*
-               AGREGAR AL DOM
-            */
 
             lista.appendChild(
                 card
@@ -1319,13 +1694,9 @@ function generarVuelos(
    SELECCIONAR VUELO
    ========================================================= */
 
-function seleccionarVuelo(vuelo) {
-
-    console.log(
-        "Vuelo seleccionado:",
-        vuelo
-    );
-
+function seleccionarVuelo(
+    vuelo
+) {
 
     vueloSeleccionado =
         vuelo;
@@ -1335,98 +1706,74 @@ function seleccionarVuelo(vuelo) {
         [];
 
 
-    /*
-       Generar pasajeros
-    */
-
     generarFormularioPasajeros();
-
-
-    /*
-       Generar asientos
-    */
 
     generarAsientos();
 
 
-    /*
-       Mostrar información
-    */
+    const secciones = [
 
-    document
-        .getElementById(
-            "seccionPasajeros"
-        )
-        .classList.remove(
-            "hidden"
-        );
+        "seccionPasajeros",
 
+        "seccionAsientos",
 
-    document
-        .getElementById(
-            "seccionAsientos"
-        )
-        .classList.remove(
-            "hidden"
-        );
+        "servicios",
+
+        "seccionContacto",
+
+        "seccionPago"
+
+    ];
 
 
-    document
-        .getElementById(
-            "servicios"
-        )
-        .classList.remove(
-            "hidden"
-        );
+    secciones.forEach(
+        function (id) {
+
+            const elemento =
+                document.getElementById(
+                    id
+                );
 
 
-    document
-        .getElementById(
-            "seccionContacto"
-        )
-        .classList.remove(
-            "hidden"
-        );
+            if (elemento) {
 
+                elemento.classList.remove(
+                    "hidden"
+                );
 
-    document
-        .getElementById(
-            "seccionPago"
-        )
-        .classList.remove(
-            "hidden"
-        );
+            }
+
+        }
+    );
 
 
     actualizarTotal();
 
-
-    /*
-       Mostrar mensaje
-    */
 
     alert(
         `Vuelo ${vuelo.numero} seleccionado correctamente.`
     );
 
 
-    /*
-       Desplazar pantalla
-    */
-
-    document
-        .getElementById(
+    const pasajeros =
+        document.getElementById(
             "seccionPasajeros"
-        )
-        .scrollIntoView({
+        );
+
+
+    if (pasajeros) {
+
+        pasajeros.scrollIntoView({
             behavior: "smooth"
         });
+
+    }
 
 }
 
 
 /* =========================================================
-   FORMULARIO DE PASAJEROS
+   FORMULARIO PASAJEROS
    ========================================================= */
 
 function generarFormularioPasajeros() {
@@ -1435,6 +1782,11 @@ function generarFormularioPasajeros() {
         document.getElementById(
             "formPasajeros"
         );
+
+
+    if (!contenedor) {
+        return;
+    }
 
 
     contenedor.innerHTML = "";
@@ -1567,7 +1919,7 @@ function generarFormularioPasajeros() {
 
 
 /* =========================================================
-   MAPA DE ASIENTOS
+   GENERAR ASIENTOS
    ========================================================= */
 
 function generarAsientos() {
@@ -1576,6 +1928,11 @@ function generarAsientos() {
         document.getElementById(
             "mapaAsientos"
         );
+
+
+    if (!mapa) {
+        return;
+    }
 
 
     mapa.innerHTML = "";
@@ -1752,7 +2109,7 @@ function seleccionarAsiento(
 
 
 /* =========================================================
-   CONTADOR DE ASIENTOS
+   CONTADOR ASIENTOS
    ========================================================= */
 
 function actualizarContador() {
@@ -1784,16 +2141,23 @@ function actualizarContador() {
 
 function cambiarMoneda() {
 
-    monedaActual =
+    const elemento =
         document.getElementById(
             "moneda"
-        ).value;
+        );
+
+
+    if (!elemento) {
+        return;
+    }
+
+
+    monedaActual =
+        elemento.value;
 
 
     /*
-       Si ya existen resultados,
-       se vuelven a generar con
-       la nueva moneda.
+       Actualizar vuelos
     */
 
     if (
@@ -1831,19 +2195,25 @@ function convertirPrecio(
     ) {
 
         return (
+
             "S/ " +
+
             (
                 precioUSD *
                 TASA_CAMBIO
             ).toFixed(2)
+
         );
 
     }
 
 
     return (
+
         "$ " +
+
         precioUSD.toFixed(2)
+
     );
 
 }
@@ -1898,6 +2268,10 @@ function actualizarTotal() {
         cantidad;
 
 
+    /*
+       SERVICIOS
+    */
+
     const servicios =
         document.querySelectorAll(
             ".service input:checked"
@@ -1907,10 +2281,18 @@ function actualizarTotal() {
     servicios.forEach(
         function (servicio) {
 
-            total +=
+            if (
                 preciosServicios[
                     servicio.value
-                ];
+                ]
+            ) {
+
+                total +=
+                    preciosServicios[
+                        servicio.value
+                    ];
+
+            }
 
         }
     );
@@ -1928,124 +2310,19 @@ function actualizarTotal() {
             : "$ ";
 
 
-    document
-        .getElementById(
+    const elemento =
+        document.getElementById(
             "precioTotal"
-        )
-        .textContent =
-        simbolo +
-        totalConvertido.toFixed(2);
-
-}
-
-
-/* =========================================================
-   CONFIRMAR RESERVA
-   ========================================================= */
-
-function confirmarReserva() {
-
-    if (
-        !vueloSeleccionado
-    ) {
-
-        alert(
-            "Debe seleccionar un vuelo."
-        );
-
-        return;
-
-    }
-
-
-    const total =
-        obtenerTotalPasajeros();
-
-
-    if (
-        asientosSeleccionados.length !==
-        total
-    ) {
-
-        alert(
-            `Debe seleccionar ${total} asiento(s).`
-        );
-
-        return;
-
-    }
-
-
-    if (
-        !validarPasajeros()
-    ) {
-
-        return;
-
-    }
-
-
-    const nombre =
-        document
-            .getElementById(
-                "contactoNombre"
-            )
-            .value.trim();
-
-
-    const email =
-        document
-            .getElementById(
-                "contactoEmail"
-            )
-            .value.trim();
-
-
-    if (
-        !nombre ||
-        !email
-    ) {
-
-        alert(
-            "Complete los datos de contacto."
-        );
-
-        return;
-
-    }
-
-
-    codigoReservaActual =
-        generarCodigoReserva();
-
-
-    mostrarResumen();
-
-
-    document
-        .getElementById(
-            "confirmacion"
-        )
-        .classList.remove(
-            "hidden"
         );
 
 
-    document
-        .getElementById(
-            "codigoReserva"
-        )
-        .textContent =
-        `Código de reserva: ${codigoReservaActual}`;
+    if (elemento) {
 
+        elemento.textContent =
+            simbolo +
+            totalConvertido.toFixed(2);
 
-    document
-        .getElementById(
-            "confirmacion"
-        )
-        .scrollIntoView({
-            behavior: "smooth"
-        });
+    }
 
 }
 
@@ -2071,7 +2348,8 @@ function validarPasajeros() {
                 .getElementById(
                     `nombrePasajero${i}`
                 )
-                .value.trim();
+                .value
+                .trim();
 
 
         const apellido =
@@ -2079,7 +2357,8 @@ function validarPasajeros() {
                 .getElementById(
                     `apellidoPasajero${i}`
                 )
-                .value.trim();
+                .value
+                .trim();
 
 
         const documento =
@@ -2087,7 +2366,8 @@ function validarPasajeros() {
                 .getElementById(
                     `documentoPasajero${i}`
                 )
-                .value.trim();
+                .value
+                .trim();
 
 
         if (
@@ -2099,6 +2379,7 @@ function validarPasajeros() {
             alert(
                 `Complete los datos del pasajero ${i}.`
             );
+
 
             return false;
 
@@ -2113,7 +2394,140 @@ function validarPasajeros() {
 
 
 /* =========================================================
-   MOSTRAR RESUMEN
+   CONFIRMAR RESERVA
+   ========================================================= */
+
+function confirmarReserva() {
+
+    if (
+        !vueloSeleccionado
+    ) {
+
+        alert(
+            "Primero debe seleccionar un vuelo."
+        );
+
+        return;
+
+    }
+
+
+    const totalPasajeros =
+        obtenerTotalPasajeros();
+
+
+    if (
+        asientosSeleccionados.length !==
+        totalPasajeros
+    ) {
+
+        alert(
+            `Debe seleccionar ${totalPasajeros} asiento(s).`
+        );
+
+        return;
+
+    }
+
+
+    if (
+        !validarPasajeros()
+    ) {
+
+        return;
+
+    }
+
+
+    const contactoNombre =
+        document.getElementById(
+            "contactoNombre"
+        );
+
+
+    const contactoEmail =
+        document.getElementById(
+            "contactoEmail"
+        );
+
+
+    if (
+        contactoNombre &&
+        !contactoNombre.value.trim()
+    ) {
+
+        alert(
+            "Ingrese el nombre del contacto."
+        );
+
+        return;
+
+    }
+
+
+    if (
+        contactoEmail &&
+        !contactoEmail.value.trim()
+    ) {
+
+        alert(
+            "Ingrese el correo electrónico."
+        );
+
+        return;
+
+    }
+
+
+    codigoReservaActual =
+        generarCodigoReserva();
+
+
+    mostrarResumen();
+
+
+    const confirmacion =
+        document.getElementById(
+            "confirmacion"
+        );
+
+
+    if (confirmacion) {
+
+        confirmacion.classList.remove(
+            "hidden"
+        );
+
+    }
+
+
+    const codigo =
+        document.getElementById(
+            "codigoReserva"
+        );
+
+
+    if (codigo) {
+
+        codigo.textContent =
+            `Código de reserva: ${codigoReservaActual}`;
+
+    }
+
+
+    if (confirmacion) {
+
+        confirmacion.scrollIntoView({
+            behavior: "smooth"
+        });
+
+    }
+
+}
+
+
+/* =========================================================
+   GENERAR RESUMEN
    ========================================================= */
 
 function mostrarResumen() {
@@ -2124,18 +2538,26 @@ function mostrarResumen() {
         );
 
 
+    if (!resumen) {
+        return;
+    }
+
+
     const total =
-        document
-            .getElementById(
-                "precioTotal"
-            )
-            .textContent;
+        document.getElementById(
+            "precioTotal"
+        );
+
+
+    const precio =
+        total
+            ? total.textContent
+            : "Pendiente";
 
 
     resumen.innerHTML = `
 
         <div class="summary-grid">
-
 
             <div class="summary-item">
 
@@ -2254,7 +2676,7 @@ function mostrarResumen() {
                 </small>
 
                 <strong>
-                    ${total}
+                    ${precio}
                 </strong>
 
             </div>
@@ -2264,19 +2686,25 @@ function mostrarResumen() {
     `;
 
 
-    document
-        .getElementById(
+    const seccion =
+        document.getElementById(
             "seccionResumen"
-        )
-        .classList.remove(
+        );
+
+
+    if (seccion) {
+
+        seccion.classList.remove(
             "hidden"
         );
+
+    }
 
 }
 
 
 /* =========================================================
-   GENERAR CÓDIGO
+   CÓDIGO DE RESERVA
    ========================================================= */
 
 function generarCodigoReserva() {
@@ -2289,7 +2717,9 @@ function generarCodigoReserva() {
         );
 
 
-    return `AST-2026-${numero}`;
+    return (
+        `AST-2026-${numero}`
+    );
 
 }
 
@@ -2335,11 +2765,10 @@ function guardarReserva() {
             monedaActual,
 
         total:
-            document
-                .getElementById(
-                    "precioTotal"
-                )
-                .textContent,
+            document.getElementById(
+                "precioTotal"
+            )
+            ?.textContent,
 
         fecha:
             new Date().toLocaleString()
@@ -2366,17 +2795,35 @@ function guardarReserva() {
 
 
 /* =========================================================
-   ADMINISTRAR RESERVA
+   BUSCAR RESERVA
    ========================================================= */
 
 function buscarReserva() {
 
+    const campo =
+        document.getElementById(
+            "buscarCodigo"
+        );
+
+
+    const resultado =
+        document.getElementById(
+            "resultadoBusqueda"
+        );
+
+
+    if (
+        !campo ||
+        !resultado
+    ) {
+
+        return;
+
+    }
+
+
     const codigo =
-        document
-            .getElementById(
-                "buscarCodigo"
-            )
-            .value
+        campo.value
             .trim()
             .toUpperCase();
 
@@ -2384,12 +2831,6 @@ function buscarReserva() {
     const reserva =
         localStorage.getItem(
             "ultimaReservaAndesSky"
-        );
-
-
-    const resultado =
-        document.getElementById(
-            "resultadoBusqueda"
         );
 
 
@@ -2435,63 +2876,55 @@ function buscarReserva() {
 
     resultado.innerHTML = `
 
-        <h3>
-            Reserva encontrada
-        </h3>
+        <div class="status-card">
 
-        <p>
-            <strong>
-                Código:
-            </strong>
+            <h3>
+                Reserva encontrada
+            </h3>
 
-            ${datos.codigo}
-        </p>
+            <p>
+                <strong>
+                    Código:
+                </strong>
 
-        <p>
-            <strong>
-                Tipo:
-            </strong>
+                ${datos.codigo}
+            </p>
 
-            ${
-                datos.tipoVuelo === "nacional"
-                ? "Nacional"
-                : "Internacional"
-            }
-        </p>
+            <p>
+                <strong>
+                    Vuelo:
+                </strong>
 
-        <p>
-            <strong>
-                Vuelo:
-            </strong>
+                ${datos.vuelo.numero}
+            </p>
 
-            ${datos.vuelo.numero}
-        </p>
+            <p>
+                <strong>
+                    Ruta:
+                </strong>
 
-        <p>
-            <strong>
-                Ruta:
-            </strong>
+                ${datos.vuelo.origen}
+                →
+                ${datos.vuelo.destino}
+            </p>
 
-            ${datos.vuelo.origen}
-            →
-            ${datos.vuelo.destino}
-        </p>
+            <p>
+                <strong>
+                    Asientos:
+                </strong>
 
-        <p>
-            <strong>
-                Asientos:
-            </strong>
+                ${datos.asientos.join(", ")}
+            </p>
 
-            ${datos.asientos.join(", ")}
-        </p>
+            <p>
+                <strong>
+                    Total:
+                </strong>
 
-        <p>
-            <strong>
-                Total:
-            </strong>
+                ${datos.total}
+            </p>
 
-            ${datos.total}
-        </p>
+        </div>
 
     `;
 
@@ -2514,6 +2947,21 @@ function cargarEstadoAeropuertos() {
         document.getElementById(
             "estadoDestino"
         );
+
+
+    if (
+        !origen ||
+        !destino
+    ) {
+
+        return;
+
+    }
+
+
+    origen.innerHTML = "";
+
+    destino.innerHTML = "";
 
 
     aeropuertosPeru.forEach(
@@ -2569,30 +3017,37 @@ function cargarEstadoAeropuertos() {
 function consultarEstado() {
 
     const origen =
-        document
-            .getElementById(
-                "estadoOrigen"
-            )
-            .value;
+        document.getElementById(
+            "estadoOrigen"
+        );
 
 
     const destino =
-        document
-            .getElementById(
-                "estadoDestino"
-            )
-            .value;
+        document.getElementById(
+            "estadoDestino"
+        );
 
 
     const resultado =
-        document
-            .getElementById(
-                "resultadoEstado"
-            );
+        document.getElementById(
+            "resultadoEstado"
+        );
 
 
     if (
-        origen === destino
+        !origen ||
+        !destino ||
+        !resultado
+    ) {
+
+        return;
+
+    }
+
+
+    if (
+        origen.value ===
+        destino.value
     ) {
 
         alert(
@@ -2613,9 +3068,9 @@ function consultarEstado() {
             </h2>
 
             <p>
-                ${origen}
+                ${origen.value}
                 →
-                ${destino}
+                ${destino.value}
             </p>
 
             <p class="status-ok">
@@ -2640,49 +3095,7 @@ function consultarEstado() {
 
 
 /* =========================================================
-   CAMBIAR MODO DE BÚSQUEDA
-   ========================================================= */
-
-function cambiarBusquedaEstado(
-    tipo,
-    boton
-) {
-
-    document
-        .querySelectorAll(
-            ".search-option"
-        )
-        .forEach(
-            function (b) {
-
-                b.classList.remove(
-                    "active"
-                );
-
-            }
-        );
-
-
-    boton.classList.add(
-        "active"
-    );
-
-
-    if (
-        tipo === "vuelo"
-    ) {
-
-        alert(
-            "Modo de búsqueda por número de vuelo activado."
-        );
-
-    }
-
-}
-
-
-/* =========================================================
-   FECHAS MÍNIMAS
+   FECHAS
    ========================================================= */
 
 function establecerFechaMinima() {
@@ -2735,3 +3148,41 @@ function establecerFechaMinima() {
     }
 
 }
+
+
+/* =========================================================
+   ACTUALIZAR FECHA RETORNO
+   ========================================================= */
+
+document.addEventListener(
+    "change",
+    function (evento) {
+
+        if (
+            evento.target &&
+            evento.target.id ===
+            "fechaSalida"
+        ) {
+
+            const fechaRetorno =
+                document.getElementById(
+                    "fechaRetorno"
+                );
+
+
+            if (fechaRetorno) {
+
+                fechaRetorno.min =
+                    evento.target.value;
+
+            }
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   FIN DEL SCRIPT
+   ========================================================= */
